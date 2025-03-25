@@ -36,5 +36,9 @@
       <groupId>org.apache.ode</groupId>
       <artifactId>ode-bpel-api</artifactId>
     </dependency>
+      <dependency>
+          <groupId>xml-apis</groupId>
+          <artifactId>xml-apis</artifactId>
+      </dependency>
    </dependencies>
 </project>

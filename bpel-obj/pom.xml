@@ -40,28 +40,14 @@
       <groupId>wsdl4j</groupId>
       <artifactId>wsdl4j</artifactId>
     </dependency>
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-    </dependency>
       <dependency>
-          <groupId>net.sourceforge.saxon</groupId>
-          <artifactId>saxon</artifactId>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+          <scope>test</scope>
       </dependency>
       <dependency>
           <groupId>net.sourceforge.saxon</groupId>
           <artifactId>saxon</artifactId>
-          <classifier>dom</classifier>
-      </dependency>
-      <dependency>
-          <groupId>net.sourceforge.saxon</groupId>
-          <artifactId>saxon</artifactId>
-          <classifier>xpath</classifier>
-      </dependency>
-      <dependency>
-          <groupId>net.sourceforge.saxon</groupId>
-          <artifactId>saxon</artifactId>
-          <classifier>xqj</classifier>
       </dependency>
    </dependencies>
 </project>

@@ -43,32 +43,16 @@
             <artifactId>ode-bpel-schemas</artifactId>
         </dependency>
         <dependency>
-          <groupId>commons-collections</groupId>
-          <artifactId>commons-collections</artifactId>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
         </dependency>
         <dependency>
-          <groupId>commons-lang</groupId>
-          <artifactId>commons-lang</artifactId>
+            <groupId>org.apache.ode</groupId>
+            <artifactId>ode-bpel-obj</artifactId>
         </dependency>
         <dependency>
           <groupId>jaxen</groupId>
           <artifactId>jaxen</artifactId>
-        </dependency>
-        <dependency>
-          <groupId>org.apache.geronimo.specs</groupId>
-          <artifactId>geronimo-jta_1.1_spec</artifactId>
-        </dependency>
-        <dependency>
-          <groupId>org.apache.geronimo.specs</groupId>
-          <artifactId>geronimo-stax-api_1.0_spec</artifactId>
-        </dependency>
-<!--        <dependency>-->
-<!--          <groupId>javax.persistence</groupId>-->
-<!--          <artifactId>persistence-api</artifactId>-->
-<!--        </dependency>-->
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jpa_2.0_spec</artifactId>
         </dependency>
         <dependency>
           <groupId>wsdl4j</groupId>
@@ -81,6 +65,7 @@
 <!--        <dependency>-->
 <!--          <groupId>net.sf.saxon</groupId>-->
 <!--            <artifactId>Saxon-HE</artifactId>-->
+<!--            <version>9.9.1-8</version>-->
 <!--        </dependency>-->
         <dependency>
             <groupId>net.sourceforge.saxon</groupId>
@@ -100,26 +85,6 @@
         <dependency>
             <groupId>net.sourceforge.saxon</groupId>
             <artifactId>saxon</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>${log4j2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>${log4j2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
-            <version>${log4j2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
         </dependency>
         <dependency>
           <groupId>xerces</groupId>
