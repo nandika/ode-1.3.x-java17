@@ -117,6 +117,7 @@
                 <include>commons-beanutils:commons-beanutils</include>
                 <include>commons-lang:commons-lang</include>
                 <include>commons-pool:commons-pool</include>
+                <include>commons-primitives:commons-primitives</include>
                 <include>org.apache.derby:derby</include>
                 <include>org.apache.derby:derbytools</include>
                 <include>jaxen:jaxen</include>
@@ -132,7 +133,7 @@
                 <include>org.apache.geronimo.components:geronimo-connector</include>
                 <include>org.apache.geronimo.modules:geronimo-kernel</include>
                 <include>org.apache.geronimo.components:geronimo-transaction</include>
-                <include>org.apache.logging.log4j:log4-web</include>
+                <include>org.apache.logging.log4j:log4j-web</include>
                 <include>org.apache.logging.log4j:log4j-slf4j-impl</include>
                 <include>org.apache.logging.log4j:log4j-core</include>
                 <include>org.apache.logging.log4j:log4j-api</include>
@@ -141,14 +142,14 @@
                 <include>org.apache.xbean:xbean-asm5-shaded</include>
 
                 <include>net.sourceforge.saxon:saxon</include>
-                <include>net.sourceforge.saxon:saxon:xpath</include>
-                <include>net.sourceforge.saxon:saxon:dom</include>
-                <include>net.sourceforge.saxon:saxon:xqj</include>
+                <include>net.sourceforge.saxon:saxon:jar:xpath</include>
+                <include>net.sourceforge.saxon:saxon:jar:dom</include>
+                <include>net.sourceforge.saxon:saxon:jar:xqj</include>
                 <include>org.tranql:tranql-connector</include>
                 <include>org.codehaus.woodstox:woodstox-core-asl</include>
                 <include>wsdl4j:wsdl4j</include>
                 <include>org.apache.neethi:neethi</include>
-                <include>org.apache.ws.commons.schema:xmlschema-core</include>
+                <include>org.apache.ws.xmlschema:xmlschema-core</include>
                 <include>xalan:xalan</include>
                 <include>xerces:xercesImpl</include>
                 <include>xml-apis:xml-apis</include>
@@ -162,28 +163,19 @@
                 <include>org.apache.axis2:mex:jar:impl</include>
                 <include>org.opensaml:opensaml</include>
                 <include>org.opensaml:opensaml1</include>
-
-
-<!--                <include>antlr:antlr</include>-->
-
-<!--                <include>commons-primitives:commons-primitives</include>-->
-<!--                <include>org.apache.geronimo.specs:geronimo-activation_1.1_spec</include>-->
-<!--                <include>org.apache.geronimo.specs:geronimo-stax-api_1.0_spec</include>-->
-<!--                <include>org.apache.geronimo.specs:geronimo-annotation_1.0_spec</include>-->
-<!--                <include>org.apache.woden:woden</include>-->
-<!--                <include>bouncycastle:bcprov-jdk15</include>-->
-<!--                <include>org.jibx:jibx-bind</include>-->
-<!--                <include>org.codehaus.jettison:jettison</include>-->
-<!--                <include>log4j:log4j</include>-->
-<!--                <include>javax.persistence:persistence-api</include>-->
-<!--                <include>org.apache.httpcomponents:httpcore</include>-->
-<!--                <include>org.apache.httpcomponents:httpcore-nio</include>-->
-<!--                <include>javax.xml.bind:jaxb-api</include>-->
-<!--                <include>com.sun.xml.bind:jaxb-impl</include>-->
-<!--                <include>com.sun.xml.bind:jaxb-xjc</include>-->
-<!--                <include>xml-resolver:xml-resolver</include>-->
-<!--                <include>javax.mail:mail</include>-->
-<!--                <include>axion:axion</include>-->
+                <include>org.opensaml:openws</include>
+                <include>org.opensaml:xmltooling</include>
+                <include>org.bouncycastle:bcprov-jdk15on</include>
+                <include>velocity:velocity</include>
+                <include>joda-time:joda-time</include>
+                <include>org.owasp.esapi:esapi</include>
+                <include>org.apache.james:apache-mime4j-core</include>
+                <include>com.h2database:h2</include>
+                <include>org.slf4j:slf4j-api</include>
+                <include>org.slf4j:jcl-over-slf4j</include>
+                <include>org.apache.ode:ode-console</include>
+                <include>org.tuckey:urlrewritefilter</include>
+                <include>xalan:serializer</include>
             </includes>
         </dependencySet>
 

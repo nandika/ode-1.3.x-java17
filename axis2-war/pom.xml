@@ -38,7 +38,6 @@
 <!--        <testng.version>5.8</testng.version>-->
         <wss4j.version>1.6.16</wss4j.version>
         <xmlsec.version>1.5.7</xmlsec.version>
-        <axis2-mex.version>1.7.6</axis2-mex.version>
         <opensaml1.version>1.1</opensaml1.version>
         <opensaml.version>2.5.1-1</opensaml.version>
         <openws.version>1.4.2-1</openws.version>
@@ -100,10 +99,6 @@
         <dependency>
             <groupId>org.apache.ode</groupId>
             <artifactId>ode-jacob</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.ode</groupId>
-            <artifactId>ode-jca-ra</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.ode</groupId>
@@ -213,6 +208,26 @@
         </dependency>
 
         <dependency>
+            <groupId>org.apache.rampart</groupId>
+            <artifactId>rampart</artifactId>
+            <version>1.7.1</version>
+            <type>mar</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.rampart</groupId>
+            <artifactId>rahas</artifactId>
+            <version>1.7.1</version>
+            <type>mar</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.axis2</groupId>
+            <artifactId>addressing</artifactId>
+            <version>${axis2.version}</version>
+            <type>mar</type>
+        </dependency>
+        <dependency>
             <groupId>annogen</groupId>
             <artifactId>annogen</artifactId>
         </dependency>
@@ -252,6 +267,10 @@
         <dependency>
             <groupId>commons-pool</groupId>
             <artifactId>commons-pool</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-primitives</groupId>
+            <artifactId>commons-primitives</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.derby</groupId>
@@ -434,26 +453,11 @@
             <artifactId>opensaml</artifactId>
             <version>${opensaml.version}</version>
         </dependency>
-
-
-
-
-        <dependency>
-            <groupId>bouncycastle</groupId>
-            <artifactId>bcprov-jdk15</artifactId>
-            <version>${bouncycastle.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.apache.axis2</groupId>
             <artifactId>mex</artifactId>
             <classifier>impl</classifier>
-            <version>${axis2-mex.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.testng</groupId>
-          <artifactId>testng</artifactId>
-          <version>${testng.version}</version>
-	      <scope>test</scope>
+            <version>${axis2.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opensaml</groupId>
@@ -489,6 +493,38 @@
             <groupId>org.apache.james</groupId>
             <artifactId>apache-mime4j-core</artifactId>
             <version>${mime4j-core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ode</groupId>
+            <artifactId>ode-console</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.tuckey</groupId>
+            <artifactId>urlrewritefilter</artifactId>
+            <version>4.0.4</version>
+        </dependency>
+        <dependency>
+            <groupId>xalan</groupId>
+            <artifactId>serializer</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>${testng.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
