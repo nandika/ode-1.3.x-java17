@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/agents/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/agents/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/axis2-war/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/axis2-war/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/axis2/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/axis2/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bpel-api-jca/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bpel-api-jca/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bpel-api/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bpel-api/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bpel-compiler/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bpel-compiler/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bpel-connector/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bpel-connector/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bpel-dao/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bpel-dao/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bpel-epr/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bpel-epr/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bpel-obj/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bpel-obj/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bpel-ql/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bpel-ql/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bpel-runtime/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bpel-runtime/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bpel-schemas/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bpel-schemas/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bpel-scripts/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bpel-scripts/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bpel-store/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bpel-store/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bpel-test/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/bpel-test/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dao-hibernate-db/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dao-hibernate-db/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dao-hibernate/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dao-hibernate/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dao-jpa-ojpa-derby/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dao-jpa-ojpa-derby/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dao-jpa/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dao-jpa/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/distro/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/distro/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jacob-ap/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jacob-ap/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jacob/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jacob/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jca-ra/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jca-ra/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jca-server/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jca-server/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/scheduler-simple/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/scheduler-simple/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tools/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/tools/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/utils/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/utils/src/main/resources" charset="UTF-8" />
+  </component>
+</project>

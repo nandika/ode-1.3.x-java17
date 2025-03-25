@@ -18,21 +18,17 @@
   ~ under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.apache.ode</groupId>
     <artifactId>ode-axis2</artifactId>
     <name>ODE :: AXIS2</name>
     <parent>
         <groupId>org.apache.ode</groupId>
         <artifactId>ode</artifactId>
-        <version>1.3.5</version>
+        <version>1.3.9-SNAPSHOT</version>
     </parent>
-    
-    <properties>
-        <servlet.version>2.4</servlet.version>
-    </properties>
-     
+
     <dependencies>
         <dependency>
             <groupId>org.apache.ode</groupId>
@@ -79,50 +75,35 @@
             <artifactId>ode-utils</artifactId>
         </dependency>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>${servlet.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.rampart</groupId>
             <artifactId>rampart-core</artifactId>
-            <version>${rampart.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.rampart</groupId>
-            <artifactId>rampart-policy</artifactId>
-            <version>${rampart.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.rampart</groupId>
-            <artifactId>rampart-trust</artifactId>
-            <version>${rampart.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.components</groupId>
             <artifactId>geronimo-transaction</artifactId>
         </dependency>
-
         <dependency>
-          <groupId>junit</groupId>
-          <artifactId>junit</artifactId>
-	  <scope>test</scope>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-servlet_2.4_spec</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
-
-
-   <build>
-     <plugins>
-       <plugin>
-	<artifactId>maven-surefire-plugin</artifactId>
-	<configuration>
-	  <excludes>
-	    <exclude>**/ProcessManagementTest.java</exclude>
-	    <exclude>**/ExecutionPathTest.java</exclude>
-	  </excludes>
-	</configuration>
-       </plugin>
-     </plugins>
-   </build>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>**/ProcessManagementTest.java</exclude>
+                        <exclude>**/ExecutionPathTest.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/distro/src/examples-jbi/maven2/helloworld2-osgi/helloworld-bundle.iml" filepath="$PROJECT_DIR$/distro/src/examples-jbi/maven2/helloworld2-osgi/helloworld-bundle.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ode.iml" filepath="$PROJECT_DIR$/ode.iml" />
+      <module fileurl="file://$PROJECT_DIR$/agents/ode-agents.iml" filepath="$PROJECT_DIR$/agents/ode-agents.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bpel-api/ode-bpel-api.iml" filepath="$PROJECT_DIR$/bpel-api/ode-bpel-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bpel-api-jca/ode-bpel-api-jca.iml" filepath="$PROJECT_DIR$/bpel-api-jca/ode-bpel-api-jca.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bpel-compiler/ode-bpel-compiler.iml" filepath="$PROJECT_DIR$/bpel-compiler/ode-bpel-compiler.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bpel-dao/ode-bpel-dao.iml" filepath="$PROJECT_DIR$/bpel-dao/ode-bpel-dao.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bpel-epr/ode-bpel-epr.iml" filepath="$PROJECT_DIR$/bpel-epr/ode-bpel-epr.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bpel-obj/ode-bpel-obj.iml" filepath="$PROJECT_DIR$/bpel-obj/ode-bpel-obj.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bpel-ql/ode-bpel-ql.iml" filepath="$PROJECT_DIR$/bpel-ql/ode-bpel-ql.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bpel-runtime/ode-bpel-runtime.iml" filepath="$PROJECT_DIR$/bpel-runtime/ode-bpel-runtime.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bpel-schemas/ode-bpel-schemas.iml" filepath="$PROJECT_DIR$/bpel-schemas/ode-bpel-schemas.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bpel-scripts/ode-bpel-scripts.iml" filepath="$PROJECT_DIR$/bpel-scripts/ode-bpel-scripts.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bpel-store/ode-bpel-store.iml" filepath="$PROJECT_DIR$/bpel-store/ode-bpel-store.iml" />
+      <module fileurl="file://$PROJECT_DIR$/dao-hibernate/ode-dao-hibernate.iml" filepath="$PROJECT_DIR$/dao-hibernate/ode-dao-hibernate.iml" />
+      <module fileurl="file://$PROJECT_DIR$/dao-hibernate-db/ode-dao-hibernate-db.iml" filepath="$PROJECT_DIR$/dao-hibernate-db/ode-dao-hibernate-db.iml" />
+      <module fileurl="file://$PROJECT_DIR$/dao-jpa/ode-dao-jpa.iml" filepath="$PROJECT_DIR$/dao-jpa/ode-dao-jpa.iml" />
+      <module fileurl="file://$PROJECT_DIR$/dao-jpa-ojpa-derby/ode-dao-jpa-ojpa-derby.iml" filepath="$PROJECT_DIR$/dao-jpa-ojpa-derby/ode-dao-jpa-ojpa-derby.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jacob/ode-jacob.iml" filepath="$PROJECT_DIR$/jacob/ode-jacob.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jacob-ap/ode-jacob-ap.iml" filepath="$PROJECT_DIR$/jacob-ap/ode-jacob-ap.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jbi/ode-jbi.iml" filepath="$PROJECT_DIR$/jbi/ode-jbi.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jbi-bundle/ode-jbi-bundle.iml" filepath="$PROJECT_DIR$/jbi-bundle/ode-jbi-bundle.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jbi-karaf/ode-jbi-karaf.iml" filepath="$PROJECT_DIR$/jbi-karaf/ode-jbi-karaf.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jbi-karaf-pmapi-httpbinding/ode-jbi-karaf-pmapi-httpbinding.iml" filepath="$PROJECT_DIR$/jbi-karaf-pmapi-httpbinding/ode-jbi-karaf-pmapi-httpbinding.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jca-ra/ode-jca-ra.iml" filepath="$PROJECT_DIR$/jca-ra/ode-jca-ra.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jca-server/ode-jca-server.iml" filepath="$PROJECT_DIR$/jca-server/ode-jca-server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/scheduler-simple/ode-scheduler-simple.iml" filepath="$PROJECT_DIR$/scheduler-simple/ode-scheduler-simple.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tools/ode-tools.iml" filepath="$PROJECT_DIR$/tools/ode-tools.iml" />
+      <module fileurl="file://$PROJECT_DIR$/utils/ode-utils.iml" filepath="$PROJECT_DIR$/utils/ode-utils.iml" />
+      <module fileurl="file://$PROJECT_DIR$/distro/src/examples-jbi/maven2/ping-pong-osgi/ping-pong-bundle.iml" filepath="$PROJECT_DIR$/distro/src/examples-jbi/maven2/ping-pong-osgi/ping-pong-bundle.iml" />
+    </modules>
+  </component>
+</project>

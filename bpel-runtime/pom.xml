@@ -18,113 +18,51 @@
   ~ under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <groupId>org.apache.ode</groupId>
     <artifactId>ode-bpel-runtime</artifactId>
     <name>ODE :: Runtime Engine</name>
     <packaging>jar</packaging>
     <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.apache.ode</groupId>
-    <artifactId>ode</artifactId>
-    <version>1.3.5</version>
-  </parent>
+    <parent>
+        <groupId>org.apache.ode</groupId>
+        <artifactId>ode</artifactId>
+        <version>1.3.9-SNAPSHOT</version>
+    </parent>
 
-  <dependencies>
-     <dependency>
-        <groupId>log4j</groupId>
-        <artifactId>log4j</artifactId>
-        <scope>test</scope>
-     </dependency>
-    <dependency>
-      <groupId>org.apache.ode</groupId>
-      <artifactId>ode-bpel-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.ode</groupId>
-      <artifactId>ode-bpel-compiler</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.ode</groupId>
-      <artifactId>ode-bpel-dao</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.ode</groupId>
-      <artifactId>ode-bpel-schemas</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.ode</groupId>
-      <artifactId>ode-bpel-store</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.ode</groupId>
-      <artifactId>ode-jacob</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.ode</groupId>
-      <artifactId>ode-jacob-ap</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.ode</groupId>
-      <artifactId>ode-utils</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.ode</groupId>
-      <artifactId>ode-bpel-epr</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.ode</groupId>
-      <artifactId>ode-scheduler-simple</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.ode</groupId>
-      <artifactId>ode-dao-jpa</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.ode</groupId>
-      <artifactId>ode-dao-hibernate</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>commons-pool</groupId>
-      <artifactId>commons-pool</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>hsqldb</groupId>
-      <artifactId>hsqldb</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>jmock</groupId>
-      <artifactId>jmock</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derby</artifactId>
-      <scope>test</scope>
-    </dependency>
+    <dependencies>
+        <!-- compile dependencies -->
         <dependency>
             <groupId>org.apache.ode</groupId>
-            <artifactId>ode-agents</artifactId>
+            <artifactId>ode-bpel-api</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.ode</groupId>
+            <artifactId>ode-bpel-compiler</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ode</groupId>
+            <artifactId>ode-bpel-dao</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ode</groupId>
+            <artifactId>ode-bpel-epr</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ode</groupId>
+            <artifactId>ode-bpel-schemas</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ode</groupId>
+            <artifactId>ode-bpel-store</artifactId>
+            <scope>compile</scope>
+        </dependency>
         <dependency>
             <groupId>org.apache.ode</groupId>
             <artifactId>ode-jacob</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.ode</groupId>
-            <artifactId>ode-jacob-ap</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.ode</groupId>
@@ -132,114 +70,275 @@
         </dependency>
         <dependency>
             <groupId>org.apache.ode</groupId>
-            <artifactId>ode-bpel-api</artifactId>
+            <artifactId>ode-agents</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jaxen</groupId>
+            <artifactId>jaxen</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jpa_2.0_spec</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-stax-api_1.0_spec</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.saxon</groupId>
+            <artifactId>saxon</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.saxon</groupId>
+            <artifactId>saxon</artifactId>
+            <classifier>dom</classifier>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.saxon</groupId>
+            <artifactId>saxon</artifactId>
+            <classifier>xpath</classifier>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.saxon</groupId>
+            <artifactId>saxon</artifactId>
+            <classifier>xqj</classifier>
+        </dependency>
+        <dependency>
+            <groupId>wsdl4j</groupId>
+            <artifactId>wsdl4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.xmlbeans</groupId>
+            <artifactId>xmlbeans</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+        <!-- test dependencies -->
+
+        <dependency>
+            <groupId>org.apache.ode</groupId>
+            <artifactId>ode-scheduler-simple</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.ode</groupId>
-            <artifactId>ode-bpel-dao</artifactId>
+            <artifactId>ode-dao-jpa</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
-          <groupId>commons-collections</groupId>
-          <artifactId>commons-collections</artifactId>
+            <groupId>org.apache.ode</groupId>
+            <artifactId>ode-dao-hibernate</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
+            <groupId>backport-util-concurrent</groupId>
+            <artifactId>backport-util-concurrent</artifactId>
         </dependency>
         <dependency>
-          <groupId>commons-httpclient</groupId>
-          <artifactId>commons-httpclient</artifactId>
+            <groupId>commons-pool</groupId>
+            <artifactId>commons-pool</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
-          <groupId>commons-lang</groupId>
-          <artifactId>commons-lang</artifactId>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
-          <groupId>jaxen</groupId>
-          <artifactId>jaxen</artifactId>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
-          <groupId>org.apache.geronimo.specs</groupId>
-          <artifactId>geronimo-jta_1.1_spec</artifactId>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
-          <groupId>org.apache.geronimo.specs</groupId>
-          <artifactId>geronimo-stax-api_1.0_spec</artifactId>
+            <groupId>org.hsqldb</groupId>
+            <artifactId>hsqldb</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
-          <groupId>javax.persistence</groupId>
-          <artifactId>persistence-api</artifactId>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-j2ee-connector_1.6_spec</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
-          <groupId>wsdl4j</groupId>
-          <artifactId>wsdl4j</artifactId>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jta_1.1_spec</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
-          <groupId>org.apache.xmlbeans</groupId>
-          <artifactId>xmlbeans</artifactId>
+            <groupId>org.apache.geronimo.components</groupId>
+            <artifactId>geronimo-transaction</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
-          <groupId>net.sf.saxon</groupId>
-          <artifactId>saxon</artifactId>
+            <groupId>org.apache.geronimo.modules</groupId>
+            <artifactId>geronimo-kernel</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
-          <groupId>net.sf.saxon</groupId>
-          <artifactId>saxon-xpath</artifactId>
+            <groupId>org.tranql</groupId>
+            <artifactId>tranql-connector</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
-          <groupId>net.sf.saxon</groupId>
-          <artifactId>saxon-dom</artifactId>
+            <groupId>org.tranql</groupId>
+            <artifactId>tranql-connector-derby-common</artifactId>
+            <version>1.8</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
-          <groupId>net.sf.saxon</groupId>
-          <artifactId>saxon-xqj</artifactId>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
-          <groupId>xerces</groupId>
-          <artifactId>xercesImpl</artifactId>
+            <groupId>org.apache.openjpa</groupId>
+            <artifactId>openjpa</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jmock</groupId>
+            <artifactId>jmock</artifactId>
+            <version>2.13.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.common</groupId>
+            <artifactId>hibernate-commons-annotations</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.javax.persistence</groupId>
+            <artifactId>hibernate-jpa-2.1-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss</groupId>
+            <artifactId>jandex</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging-annotations</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
 
-        <dependency>
-          <groupId>junit</groupId>
-          <artifactId>junit</artifactId>
-	  <scope>test</scope>
-        </dependency>
 
-       <dependency>
-          <groupId>tranql</groupId>
-          <artifactId>tranql-connector-derby-common</artifactId>
-          <version>1.1</version>
-          <scope>test</scope>
-       </dependency>       
-
-
-   </dependencies>
+<!--        &lt;!&ndash; Hamcrest Dependency &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.hamcrest</groupId>-->
+<!--            <artifactId>hamcrest-core</artifactId>-->
+<!--            <version>1.3</version>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
+    </dependencies>
     <build>
         <plugins>
+            <!--
             <plugin>
-		<groupId>org.codehaus.mojo</groupId>
-		<artifactId>apt-maven-plugin</artifactId>
-		<version>1.0-alpha-3</version>
-		<configuration>
-		  <factory>org.apache.ode.jacob.ap.JacobAnnotationProcessorFactory</factory>
-		  <outputDirectory>target/generated/apt</outputDirectory>
-		</configuration>
-		<executions>
-		   <execution>
-		    <goals>
-		       <goal>process</goal>
-		       <goal>test-process</goal>
-		    </goals>
-		   </execution>
-	        </executions>
-		<dependencies>
-		   <dependency>
-		      <groupId>org.apache.ode</groupId>
-		      <artifactId>ode-jacob-ap</artifactId>
-		      <version>${project.version}</version>
-		   </dependency>
-		 </dependencies>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>apt-maven-plugin</artifactId>
+                <version>1.0-alpha-3</version>
+                <configuration>
+                    <factory>org.apache.ode.jacob.ap.JacobAnnotationProcessorFactory</factory>
+                    <outputDirectory>target/generated/apt</outputDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>process</goal>
+                            <goal>test-process</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.ode</groupId>
+                        <artifactId>ode-jacob-ap</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                        <excludes>
+                            <exclude>**/ActivityRecoveryTest.java</exclude>
+                        </excludes>
+                    <skipTests>false</skipTests>
+                    <argLine>-da</argLine>
+                </configuration>
             </plugin>
         </plugins>
     </build>
+
 </project>

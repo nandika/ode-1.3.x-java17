@@ -60,7 +60,8 @@ public class MexTest extends BaseTestDAO {
 
     public void test() throws Exception {
         MessageExchangeDAO mex = daoConn.createMessageExchange('M');
-        mex.lockPremieMessages();
+
+       // mex.lockPremieMessages();
 
         SessionManager sm = ((BpelDAOConnectionImpl) daoConn)._sm;
         HCorrelator correlator = new HCorrelator();

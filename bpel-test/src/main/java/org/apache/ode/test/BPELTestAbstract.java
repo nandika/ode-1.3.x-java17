@@ -71,6 +71,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.w3c.dom.Element;
+import org.springframework.mock.jndi.SimpleNamingContextBuilder;
 
 public abstract class BPELTestAbstract {
     private static final Logger log = LoggerFactory.getLogger(BPELTestAbstract.class);

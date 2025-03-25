@@ -27,7 +27,7 @@
     <parent>
         <groupId>org.apache.ode</groupId>
         <artifactId>ode</artifactId>
-        <version>1.3.5</version>
+        <version>1.3.9-SNAPSHOT</version>
     </parent>
 
     <dependencies>
@@ -35,10 +35,10 @@
             <groupId>org.apache.ode</groupId>
             <artifactId>ode-utils</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.apache.ode</groupId>
-            <artifactId>ode-jacob-ap</artifactId>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.apache.ode</groupId>-->
+<!--            <artifactId>ode-jacob-ap</artifactId>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
@@ -50,32 +50,32 @@
         </dependency>
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-		<groupId>org.codehaus.mojo</groupId>
-		<artifactId>apt-maven-plugin</artifactId>
-		<version>1.0-alpha-3</version>
-		<configuration>
-		  <factory>org.apache.ode.jacob.ap.JacobAnnotationProcessorFactory</factory>
-		  <outputDirectory>target/generated/apt</outputDirectory>
-		</configuration>
-		<executions>
-		   <execution>
-		    <goals>
-		       <goal>process</goal>
-		       <goal>test-process</goal>
-		    </goals>
-		   </execution>
-	        </executions>
-		<dependencies>
-		   <dependency>
-		      <groupId>org.apache.ode</groupId>
-		      <artifactId>ode-jacob-ap</artifactId>
-		      <version>${project.version}</version>
-		   </dependency>
-		 </dependencies>
-            </plugin>
-        </plugins>
-    </build>
+<!--    <build>-->
+<!--        <plugins>-->
+<!--            <plugin>-->
+<!--		<groupId>org.codehaus.mojo</groupId>-->
+<!--		<artifactId>apt-maven-plugin</artifactId>-->
+<!--		<version>1.0-alpha-3</version>-->
+<!--		<configuration>-->
+<!--		  <factory>org.apache.ode.jacob.ap.JacobAnnotationProcessorFactory</factory>-->
+<!--		  <outputDirectory>target/generated/apt</outputDirectory>-->
+<!--		</configuration>-->
+<!--		<executions>-->
+<!--		   <execution>-->
+<!--		    <goals>-->
+<!--		       <goal>process</goal>-->
+<!--		       <goal>test-process</goal>-->
+<!--		    </goals>-->
+<!--		   </execution>-->
+<!--	        </executions>-->
+<!--		<dependencies>-->
+<!--		   <dependency>-->
+<!--		      <groupId>org.apache.ode</groupId>-->
+<!--		      <artifactId>ode-jacob-ap</artifactId>-->
+<!--		      <version>${project.version}</version>-->
+<!--		   </dependency>-->
+<!--		 </dependencies>-->
+<!--            </plugin>-->
+<!--        </plugins>-->
+<!--    </build>-->
 </project>

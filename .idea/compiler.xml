@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="ode-axis2" />
+        <module name="ode-jacob" />
+        <module name="ode-agents" />
+        <module name="ode-bpel-api-jca" />
+        <module name="ode-bpel-compiler" />
+        <module name="ode-bpel-runtime" />
+        <module name="ode-bpel-test" />
+        <module name="ode-bpel-api" />
+        <module name="ode-jacob-ap" />
+        <module name="ode-dao-jpa" />
+        <module name="ode-bpel-connector" />
+        <module name="ode-bpel-dao" />
+        <module name="ode-bpel-epr" />
+        <module name="ode-bpel-scripts" />
+        <module name="ode-dao-hibernate" />
+        <module name="ode-dao-hibernate-db" />
+        <module name="ode-bpel-ql" />
+        <module name="ode-bpel-schemas" />
+        <module name="ode-tools" />
+        <module name="ode-jca-server" />
+        <module name="ode-scheduler-simple" />
+        <module name="ode-bpel-obj" />
+        <module name="ode-jca-ra" />
+        <module name="ode-dao-jpa-ojpa-derby" />
+        <module name="ode-bpel-store" />
+        <module name="ode-utils" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="helloworld-bundle" target="1.5" />
+      <module name="ode-distro" target="1.5" />
+      <module name="ode-jbi" target="1.5" />
+      <module name="ode-jbi-bundle" target="1.5" />
+      <module name="ode-jbi-karaf" target="1.5" />
+      <module name="ode-jbi-karaf-pmapi-httpbinding" target="1.5" />
+      <module name="ping-pong-bundle" target="1.5" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

@@ -28,7 +28,7 @@
   <parent>
     <groupId>org.apache.ode</groupId>
     <artifactId>ode</artifactId>
-    <version>1.3.5</version>
+    <version>1.3.9-SNAPSHOT</version>
   </parent>
 
   <dependencies>
@@ -38,7 +38,7 @@
     </dependency>
     <dependency>
         <groupId>org.apache.geronimo.specs</groupId>
-        <artifactId>geronimo-j2ee-connector_1.5_spec</artifactId>
+        <artifactId>geronimo-j2ee-connector_1.6_spec</artifactId>
     </dependency>
    </dependencies>
 </project>
