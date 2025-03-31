@@ -205,6 +205,21 @@
                             </target>
                         </configuration>
                     </execution>
+                        <execution>
+                            <id>replace-hibernate-dtd</id>
+                            <phase>process-resources</phase>
+                            <configuration>
+                                <tasks>
+                                    <replace dir="target/classes/org/apache/ode/store/hib"
+                                             token="http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"
+                                             value="http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"
+                                             includes="*.hbm.xml"/>
+                                </tasks>
+                            </configuration>
+                            <goals>
+                                <goal>run</goal>
+                            </goals>
+                        </execution>
                 </executions>
             </plugin>
 
