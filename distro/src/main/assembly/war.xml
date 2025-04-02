@@ -40,7 +40,7 @@
 
     <fileSet>
       <directory>${basedir}/../dao-jpa-ojpa-derby/target/</directory>
-      <outputDirectory>/sql</outputDirectory>
+      <outputDirectory>/sql/openjpa</outputDirectory>
       <includes>
       	<include>*.sql</include>
       </includes>
@@ -48,6 +48,17 @@
       	<exclude>*partial*.sql</exclude>
       </excludes>
     </fileSet>
+    <fileSet>
+      <directory>${basedir}/../dao-hibernate-db/target/</directory>
+      <outputDirectory>/sql/hibernate</outputDirectory>
+      <includes>
+        <include>*.sql</include>
+      </includes>
+      <excludes>
+        <exclude>*partial*.sql</exclude>
+      </excludes>
+    </fileSet>
+
 
     <fileSet>
       <directory>${basedir}/../</directory>
@@ -89,21 +100,25 @@
         <include>org.apache.ode:ode-bpel-api</include>
         <include>org.apache.ode:ode-bpel-obj</include>
         <include>org.apache.ode:ode-bpel-schemas</include>
-        <include>commons-logging:commons-logging</include>
-        <include>org.apache.ode:ode-utils</include>
-        <include>commons-codec:commons-codec</include> 
+        <include>commons-codec:commons-codec</include>
         <include>commons-collections:commons-collections</include> 
         <include>commons-httpclient:commons-httpclient</include> 
         <include>commons-pool:commons-pool</include>
-        <include>net.sf.saxon:saxon</include>
-        <include>net.sf.saxon:saxon-xpath</include>
-        <include>net.sf.saxon:saxon-dom</include>
-        <include>net.sf.saxon:saxon-xqj</include>
+        <include>net.sourceforge.saxon:saxon</include>
+        <include>net.sourceforge.saxon:saxon:jar:xpath</include>
+        <include>net.sourceforge.saxon:saxon:jar:dom</include>
+        <include>net.sourceforge.saxon:saxon:jar:xqj</include>
         <include>jaxen:jaxen</include>  
-        <include>log4j:log4j</include> 
-        <include>wsdl4j:wsdl4j</include>
+         <include>wsdl4j:wsdl4j</include>
         <include>xalan:xalan</include>
         <include>xerces:xercesImpl</include>
+        <include>xml-apis:xml-apis</include>
+        <include>org.apache.logging.log4j:log4j-api</include>
+        <include>org.apache.logging.log4j:log4j-core</include>
+        <include>org.apache.logging.log4j:log4j-slf4j-impl</include>
+        <include>org.apache.logging.log4j:log4j-web</include>
+        <include>org.slf4j:slf4j-api</include>
+        <include>org.slf4j:jcl-over-slf4j</include>
       </includes>
     </dependencySet>
   </dependencySets>

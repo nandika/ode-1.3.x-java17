@@ -62,11 +62,15 @@
   </target>
 
   <target name="zip-derby-db">
-    <zip destfile="${basedir}/target/ode-dao-hibernate-db-${ode.version}.zip" basedir="${basedir}/target/derby-hibdb/" />
+<!--    <zip destfile="${basedir}/target/ode-dao-hibernate-db-${ode.version}.zip" basedir="${basedir}/target/derby-hibdb/" />-->
+      <zip destfile="${basedir}/target/ode-dao-hibernate-db-${ode.version}.zip" >
+        <fileset dir="${basedir}/target/">
+          <include name="derby-hibdb/*"/>
+          <include name="h2-hibdb/*"/>
+        </fileset>
+      </zip>
   </target>
-<target name="zip-h2-db">
-    <zip destfile="${basedir}/target/ode-dao-hibernate-db-${ode.version}.zip" basedir="${basedir}/target/derby/" />
-</target>
+
 
   <!--
      ============================================

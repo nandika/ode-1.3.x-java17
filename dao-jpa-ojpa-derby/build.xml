@@ -47,18 +47,21 @@
     <create-ddl db="h2"/>
 
     <!-- Postgres -->
-<!--
-<create-ddl db="postgres"/>
--->
+    <create-ddl db="postgres"/>
+    <!-- SQLServer -->
+    <create-ddl db="sqlserver"/>
 
   </target>
 
   <target name="zip-derby-db">
-    <zip destfile="${basedir}/target/ode-dao-jpa-ojpa-derby-${ode.version}.zip" basedir="${basedir}/target/derby" />
+      <zip destfile="${basedir}/target/ode-dao-jpa-ojpa-derby-${ode.version}.zip" >
+      <fileset dir="${basedir}/target/">
+          <include name="**/derby-jpadb/*"/>
+          <include name="**/h2-jpadb/*"/>
+      </fileset>
+      </zip>
   </target>
-    <target name="zip-h2-db">
-        <zip destfile="${basedir}/target/ode-dao-jpa-ojpa-h2-${ode.version}.zip" basedir="${basedir}/target/h2-jpadb" />
-    </target>
+
 
   <!--
      ============================================

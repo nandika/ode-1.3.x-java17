@@ -46,10 +46,10 @@
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jpa_2.0_spec</artifactId>
         </dependency>
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>commons-logging</groupId>-->
+<!--            <artifactId>commons-logging</artifactId>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
@@ -218,6 +218,20 @@
                         </configuration>
                     </execution>
                     <execution>
+                        <id>adjust mysql script</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <copy file="target/mysqlnew.sql"
+                                      tofile="target/mysql.sql"/>
+                                <delete file="target/mysqlnew.sql" />
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>zip-derby-db</id>
                         <phase>package</phase>
                         <goals>
@@ -227,19 +241,6 @@
                             <target>
                                 <property name="ode.version" value="${project.version}"/>
                                 <ant antfile="build.xml" target="zip-derby-db"/>
-                            </target>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>zip-h2-db</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <property name="ode.version" value="${project.version}"/>
-                                <ant antfile="build.xml" target="zip-h2-db"/>
                             </target>
                         </configuration>
                     </execution>
@@ -265,7 +266,7 @@
                         </goals>
                         <configuration>
                             <driver>org.apache.derby.jdbc.EmbeddedDriver</driver>
-                            <url>jdbc:derby:${basedir}/target/derby/jpadb;create=true</url>
+                            <url>jdbc:derby:${basedir}/target/derby-jpadb;create=true</url>
                             <username>sa</username>
                             <password/>
                             <autocommit>true</autocommit>

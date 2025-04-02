@@ -27,23 +27,35 @@
 
     <fileSets>
         <fileSet>
-            <directory>${project.build.directory}/axis2-webapp</directory>
-            <outputDirectory>/</outputDirectory>
-        </fileSet>
-
-        <fileSet>
             <directory>src/main/webapp</directory>
             <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+            <excludes>
+                <exclude>**/urlrewrite.xml</exclude>
+                <exclude>**/css/**</exclude>
+                <exclude>**/images/**</exclude>
+                <exclude>**/js/**</exclude>
+            </excludes>
         </fileSet>
 
-        <fileSet>
-            <directory>${basedir}/../dao-jpa-ojpa-derby/target/derby</directory>
-            <outputDirectory>/WEB-INF</outputDirectory>
-        </fileSet>
 
         <fileSet>
-            <directory>${basedir}/../dao-hibernate-db/target/derby</directory>
-            <outputDirectory>/WEB-INF</outputDirectory>
+            <directory>${basedir}/../dao-jpa-ojpa-derby/target/derby-jpadb</directory>
+            <outputDirectory>/WEB-INF/derby-jpadb</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${basedir}/../dao-jpa-ojpa-derby/target/h2-jpadb</directory>
+            <outputDirectory>/WEB-INF/h2-jpadb</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${basedir}/../dao-hibernate-db/target/derby-hibdb</directory>
+            <outputDirectory>/WEB-INF/derby-hibdb</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${basedir}/../dao-hibernate-db/target/h2-hibdb</directory>
+            <outputDirectory>/WEB-INF/h2-hibdb</outputDirectory>
         </fileSet>
 
         <fileSet>
@@ -58,8 +70,13 @@
                 <include>pmapi.xsd</include>
             </includes>
         </fileSet>
-
     </fileSets>
+    <files>
+        <file>
+            <source>${basedir}/target/urlrewrite.xml</source>
+            <outputDirectory>/WEB-INF</outputDirectory>
+        </file>
+    </files>
 
     <dependencySets>
 
@@ -105,8 +122,6 @@
                 <include>org.apache.axis2:axis2-transport-tcp</include>
                 <include>org.apache.axis2:axis2-transport-jms</include>
                 <include>org.apache.httpcomponents:httpcore</include>
-
-
                 <include>annogen:annogen</include>
                 <include>backport-util-concurrent:backport-util-concurrent</include>
                 <include>commons-codec:commons-codec</include>
@@ -183,6 +198,9 @@
             <outputDirectory>/WEB-INF/modules</outputDirectory>
             <includes>
                 <include>org.apache.axis2:addressing:mar</include>
+                <include>org.apache.rampart:rampart:mar</include>
+                <include>org.apache.rampart:rahas:mar</include>
+                <include>org.apache.axis2:mex:mar</include>
             </includes>
         </dependencySet>
     </dependencySets>

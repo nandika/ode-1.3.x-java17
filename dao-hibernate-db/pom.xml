@@ -142,6 +142,20 @@
                         </configuration>
                     </execution>
                     <execution>
+                        <id>adjust mysql script</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <copy file="target/mysqlnew.sql"
+                                      tofile="target/mysql.sql"/>
+                                <delete file="target/mysqlnew.sql" />
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>zip-derby-db</id>
                         <phase>package</phase>
                         <goals>
@@ -175,7 +189,7 @@
                         </goals>
                         <configuration>
                             <driver>org.apache.derby.jdbc.EmbeddedDriver</driver>
-                            <url>jdbc:derby:${basedir}/target/derby-hibdb/hibdb;create=true</url>
+                            <url>jdbc:derby:${basedir}/target/derby-hibdb;create=true</url>
                             <username>sa</username>
                             <password/>
                             <autocommit>true</autocommit>
@@ -194,7 +208,7 @@
 
                         <configuration>
                             <driver>org.h2.Driver</driver>
-                            <url>jdbc:h2:${basedir}/target/de-hib-h2/h2-hibdb;create=true</url>
+                            <url>jdbc:h2:${basedir}/target/h2-hibdb/ode-hib-h2;create=true</url>
                             <username>sa</username>
                             <password/>
                             <autocommit>true</autocommit>
