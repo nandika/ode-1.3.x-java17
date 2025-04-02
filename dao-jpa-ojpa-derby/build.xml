@@ -43,6 +43,9 @@
     <!-- Oracle -->
     <create-ddl db="oracle"/>
 
+    <!-- H2 -->
+    <create-ddl db="h2"/>
+
     <!-- Postgres -->
 <!--
 <create-ddl db="postgres"/>
@@ -53,6 +56,9 @@
   <target name="zip-derby-db">
     <zip destfile="${basedir}/target/ode-dao-jpa-ojpa-derby-${ode.version}.zip" basedir="${basedir}/target/derby" />
   </target>
+    <target name="zip-h2-db">
+        <zip destfile="${basedir}/target/ode-dao-jpa-ojpa-h2-${ode.version}.zip" basedir="${basedir}/target/h2" />
+    </target>
 
   <!--
      ============================================
@@ -74,9 +80,9 @@
 		</classpath>
         </mappingtool>
         <concat destfile="${db.scripts.dir}/@{db}.sql">
-          <fileset file="${scripts.dir}/common.sql"/>
-          <fileset file="${scripts.dir}/license-header.sql"/>
-          <fileset file="${scripts.dir}/simplesched-@{db}.sql"/>
+            <fileset file="${scripts.dir}/license-header.sql"/>
+            <fileset file="${scripts.dir}/common.sql"/>
+            <fileset file="${scripts.dir}/simplesched-@{db}.sql"/>
           <fileset file="${db.scripts.dir}/partial.@{db}.sql"/>
         </concat>
       <echo>Done.</echo>

@@ -122,7 +122,8 @@
         <javax.mail.version>1.4</javax.mail.version>
         <jibx.version>1.2.1</jibx.version>
         <junit.version>4.11</junit.version>
-        <jmock.version>2.8.0</jmock.version>
+        <jmock.version>2.5.1</jmock.version>
+        <jmock-junit4>2.5.1</jmock-junit4>
         <jencks.version>2.2</jencks.version>
         <jasper.version>8.5.28</jasper.version>
 
@@ -290,6 +291,16 @@
 
     <repositories>
         <repository>
+            <id>wso2-public</id>
+            <url>https://maven.wso2.org/nexus/content/repositories/wso2-public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
             <id>central</id>
             <name>Maven Repository Switchboard</name>
             <url>http://repo1.maven.org/maven2</url>
@@ -300,16 +311,7 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-        <repository>
-            <id>wso2-public</id>
-            <url>https://maven.wso2.org/nexus/content/repositories/wso2-public</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
+
     </repositories>
 
     <pluginRepositories>
@@ -873,9 +875,16 @@
                 <version>${xstream.version}</version>
             </dependency>
             <dependency>
-                <groupId>jmock</groupId>
+                <groupId>org.jmock</groupId>
                 <artifactId>jmock</artifactId>
                 <version>${jmock.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.jmock</groupId>
+                <artifactId>jmock-junit4</artifactId>
+                <version>${jmock-junit4}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.activemq</groupId>
