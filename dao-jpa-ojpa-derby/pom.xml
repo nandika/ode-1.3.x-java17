@@ -20,7 +20,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.apache.ode</groupId>
     <artifactId>ode-dao-jpa-ojpa-derby</artifactId>
     <name>ODE :: OpenJPA DDL Generation</name>
     <parent>
@@ -149,6 +148,7 @@
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
         </dependency>
+
     </dependencies>
 
     <build>
@@ -156,6 +156,14 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.groovy</groupId>
+                        <artifactId>groovy-ant</artifactId>
+                        <version>4.0.24</version>
+                    </dependency>
+                </dependencies>
                 <executions>
                     <execution>
                         <id>create-db-schemas</id>
@@ -167,6 +175,45 @@
                             <target>
                                 <property name="maven.runtime.classpath" refid="maven.compile.classpath"/>
                                 <ant antfile="build.xml" target="create-schema"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>modify-mysql-script</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <taskdef name="groovy" classname="org.codehaus.groovy.ant.Groovy">
+                                    <classpath>
+                                        <pathelement location="${settings.localRepository}/org/codehaus/groovy/groovy-ant/4.0.20/groovy-ant-4.0.20.jar"/>
+                                        <pathelement location="${settings.localRepository}/org/codehaus/groovy/groovy/4.0.20/groovy-4.0.20.jar"/>
+                                    </classpath>
+                                </taskdef>
+                                <groovy>
+                                    def srcFile = new File("${project.basedir}/target/mysql.sql")
+                                    def destFile = new File("${project.basedir}/target/mysqlnew.sql")
+
+                                    destFile.withWriter("UTF-8") { writer ->
+                                    def isCT = "no"
+                                    srcFile.eachLine { line ->
+                                        if (line.toLowerCase().matches(".*create\\s+table.*") &amp;&amp;  line.contains(";")) {
+                                            writer.writeLine(line.replace(";", " ENGINE=InnoDB;"))
+                                        } else if (line.toLowerCase().matches(".*create\\s+table.*") &amp;&amp; !line.contains(";")) {
+                                             isCT = "yes"
+                                            writer.writeLine(line)
+                                        } else if (isCT == "yes" &amp;&amp; line.contains(";")) {
+                                            isCT = "no"
+                                            writer.writeLine(line.replace(";", " ENGINE=InnoDB;"))
+                                        } else {
+                                        writer.writeLine(line)
+                                        }
+                                    }
+                                    }
+                                    println "SQL modification completed. Output: " + destFile.absolutePath
+                                </groovy>
                             </target>
                         </configuration>
                     </execution>
@@ -237,7 +284,7 @@
 
                         <configuration>
                             <driver>org.h2.Driver</driver>
-                            <url>jdbc:h2:${basedir}/target/h2/jpadb;create=true</url>
+                            <url>jdbc:h2:${basedir}/target/h2-jpadb/ode-jpa-h2;create=true</url>
                             <username>sa</username>
                             <password/>
                             <autocommit>true</autocommit>

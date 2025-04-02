@@ -57,7 +57,7 @@
     <zip destfile="${basedir}/target/ode-dao-jpa-ojpa-derby-${ode.version}.zip" basedir="${basedir}/target/derby" />
   </target>
     <target name="zip-h2-db">
-        <zip destfile="${basedir}/target/ode-dao-jpa-ojpa-h2-${ode.version}.zip" basedir="${basedir}/target/h2" />
+        <zip destfile="${basedir}/target/ode-dao-jpa-ojpa-h2-${ode.version}.zip" basedir="${basedir}/target/h2-jpadb" />
     </target>
 
   <!--
