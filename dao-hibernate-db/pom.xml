@@ -80,51 +80,67 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.0</version>
+                <version>3.1.0</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.groovy</groupId>
+                        <artifactId>groovy-ant</artifactId>
+                        <version>4.0.24</version>
+                    </dependency>
+                </dependencies>
                 <executions>
                     <execution>
                         <id>schemagen</id>
                         <phase>generate-sources</phase>
                         <configuration>
-                            <tasks>
+                            <target>
                                 <property name="maven.runtime.classpath" refid="maven.compile.classpath"/>
                                 <ant antfile="build.xml" target="create-schema" inheritRefs="true"/>
-                            </tasks>
+                            </target>
                         </configuration>
                         <goals>
                             <goal>run</goal>
                         </goals>
                     </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>sql-maven-plugin</artifactId>
-                <executions>
                     <execution>
-                        <id>create-derby-db</id>
-                        <phase>process-resources</phase>
+                        <id>modify-mysql-script</id>
+                        <phase>generate-sources</phase>
                         <goals>
-                            <goal>execute</goal>
+                            <goal>run</goal>
                         </goals>
                         <configuration>
-                            <driver>org.apache.derby.jdbc.EmbeddedDriver</driver>
-                            <url>jdbc:derby:${basedir}/target/derby/hibdb;create=true</url>
-                            <username>sa</username>
-                            <password/>
-                            <autocommit>true</autocommit>
-                            <onError>continue</onError>
-                            <srcFiles>
-                                <srcFile>target/derby.sql</srcFile>
-                            </srcFiles>
+                            <target>
+                                <taskdef name="groovy" classname="org.codehaus.groovy.ant.Groovy">
+                                    <classpath>
+                                        <pathelement location="${settings.localRepository}/org/codehaus/groovy/groovy-ant/4.0.20/groovy-ant-4.0.20.jar"/>
+                                        <pathelement location="${settings.localRepository}/org/codehaus/groovy/groovy/4.0.20/groovy-4.0.20.jar"/>
+                                    </classpath>
+                                </taskdef>
+                                <groovy>
+                                    def srcFile = new File("${project.basedir}/target/mysql.sql")
+                                    def destFile = new File("${project.basedir}/target/mysqlnew.sql")
+
+                                    destFile.withWriter("UTF-8") { writer ->
+                                    def isCT = "no"
+                                    srcFile.eachLine { line ->
+                                    if (line.toLowerCase().matches(".*create\\s+table.*") &amp;&amp;  line.contains(";")) {
+                                    writer.writeLine(line.replace(";", " ENGINE=InnoDB;"))
+                                    } else if (line.toLowerCase().matches(".*create\\s+table.*") &amp;&amp; !line.contains(";")) {
+                                    isCT = "yes"
+                                    writer.writeLine(line)
+                                    } else if (isCT == "yes" &amp;&amp; line.contains(";")) {
+                                    isCT = "no"
+                                    writer.writeLine(line.replace(";", " ENGINE=InnoDB;"))
+                                    } else {
+                                    writer.writeLine(line)
+                                    }
+                                    }
+                                    }
+                                    println "SQL modification completed. Output: " + destFile.absolutePath
+                                </groovy>
+                            </target>
                         </configuration>
                     </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
                     <execution>
                         <id>zip-derby-db</id>
                         <phase>package</phase>
@@ -136,6 +152,56 @@
                                 <property name="ode.version" value="${project.version}"/>
                                 <ant antfile="build.xml" target="zip-derby-db"/>
                             </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>sql-maven-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.h2database</groupId>
+                        <artifactId>h2</artifactId>
+                        <version>${h2.version}</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>create-derby-db</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <configuration>
+                            <driver>org.apache.derby.jdbc.EmbeddedDriver</driver>
+                            <url>jdbc:derby:${basedir}/target/derby-hibdb/hibdb;create=true</url>
+                            <username>sa</username>
+                            <password/>
+                            <autocommit>true</autocommit>
+                            <onError>continue</onError>
+                            <srcFiles>
+                                <srcFile>target/derby.sql</srcFile>
+                            </srcFiles>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>create-h2-db</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+
+                        <configuration>
+                            <driver>org.h2.Driver</driver>
+                            <url>jdbc:h2:${basedir}/target/de-hib-h2/h2-hibdb;create=true</url>
+                            <username>sa</username>
+                            <password/>
+                            <autocommit>true</autocommit>
+                            <onError>continue</onError>
+                            <srcFiles>
+                                <srcFile>target/h2.sql</srcFile>
+                            </srcFiles>
                         </configuration>
                     </execution>
                 </executions>

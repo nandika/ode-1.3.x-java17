@@ -50,6 +50,7 @@
 
     <!-- Sybase -->
     <create-ddl db="hsql" />
+
     <create-ddl db="h2" />
 
     <!-- MSSQL -->
@@ -61,9 +62,11 @@
   </target>
 
   <target name="zip-derby-db">
-    <zip destfile="${basedir}/target/ode-dao-hibernate-db-${ode.version}.zip" basedir="${basedir}/target/derby/" />
-
+    <zip destfile="${basedir}/target/ode-dao-hibernate-db-${ode.version}.zip" basedir="${basedir}/target/derby-hibdb/" />
   </target>
+<target name="zip-h2-db">
+    <zip destfile="${basedir}/target/ode-dao-hibernate-db-${ode.version}.zip" basedir="${basedir}/target/derby/" />
+</target>
 
   <!--
      ============================================
