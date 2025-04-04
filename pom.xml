@@ -131,7 +131,7 @@
         <log4j2.version>2.3</log4j2.version>
 
         <neethi.version>3.0.3</neethi.version>
-        <openjpa.version>2.4.0</openjpa.version>
+        <openjpa.version>2.4.2</openjpa.version>
         <ode-console.version>0.1.0</ode-console.version>
 
 <!--        <opensaml.version>2.5.1-1</opensaml.version>-->
@@ -291,16 +291,6 @@
 
     <repositories>
         <repository>
-            <id>wso2-public</id>
-            <url>https://maven.wso2.org/nexus/content/repositories/wso2-public</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
             <id>central</id>
             <name>Maven Repository Switchboard</name>
             <url>http://repo1.maven.org/maven2</url>
@@ -311,7 +301,16 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-
+        <repository>
+            <id>wso2-public</id>
+            <url>https://maven.wso2.org/nexus/content/repositories/wso2-public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
     </repositories>
 
     <pluginRepositories>
@@ -330,21 +329,6 @@
             <name>Codehaus Repository</name>
             <url>http://repository.codehaus.org/</url>
         </pluginRepository>
-<!--        <pluginRepository>-->
-<!--            <id>ibiblio</id>-->
-<!--            <name>ibiblio</name>-->
-<!--            <url>http://www.ibiblio.org/maven2</url>-->
-<!--        </pluginRepository>-->
-<!--        <pluginRepository>-->
-<!--            <id>apache.snapshots</id>-->
-<!--            <name>Apache snapshots</name>-->
-<!--            <url>http://repository.apache.org/snapshots/</url>-->
-<!--        </pluginRepository>-->
-<!--        <pluginRepository>-->
-<!--            <id>intalio</id>-->
-<!--            <name>Intalio Maven2 repository</name>-->
-<!--            <url>http://pxe.intalio.org/public/maven2</url>-->
-<!--        </pluginRepository>-->
     </pluginRepositories>
 
 

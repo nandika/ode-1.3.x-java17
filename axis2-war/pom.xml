@@ -18,7 +18,8 @@
   ~ under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>ode-axis2-war</artifactId>
     <name>ODE :: Axis2 Based Web Application</name>
@@ -29,12 +30,11 @@
         <artifactId>ode</artifactId>
         <version>1.3.9-SNAPSHOT</version>
     </parent>
-    
+
     <properties>
-        <testng.version>7.4.0</testng.version>
+        <testng.version>6.14.3</testng.version>
         <bouncycastle.version>140</bouncycastle.version>
         <jetty.version>6.1.3</jetty.version>
-<!--        <testng.version>5.8</testng.version>-->
         <wss4j.version>1.6.16</wss4j.version>
         <xmlsec.version>1.5.7</xmlsec.version>
         <opensaml1.version>1.1</opensaml1.version>
@@ -73,6 +73,12 @@
         <dependency>
             <groupId>org.apache.ode</groupId>
             <artifactId>ode-bpel-epr</artifactId>
+            <exclusions>
+                <exclusion>
+                        <groupId>org.jencks</groupId>
+                        <artifactId>jencks</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.ode</groupId>
@@ -345,14 +351,17 @@
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-slf4j-impl</artifactId>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
@@ -388,6 +397,7 @@
         <dependency>
             <groupId>org.tranql</groupId>
             <artifactId>tranql-connector</artifactId>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.codehaus.woodstox</groupId>
@@ -538,163 +548,183 @@
         <dependency>
             <groupId>org.mortbay.jetty</groupId>
             <artifactId>jetty</artifactId>
-            <version>6.1.3</version>
+            <version>${jetty.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mortbay.jetty</groupId>
+            <artifactId>jetty-util</artifactId>
+            <version>${jetty.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mortbay.jetty</groupId>
             <artifactId>servlet-api-2.5</artifactId>
-            <version>6.1.3</version>
+            <version>${jetty.version}</version>
             <scope>test</scope>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.mortbay.jetty/jetty-plus -->
-        <dependency>
-            <groupId>org.mortbay.jetty</groupId>
-            <artifactId>jetty-plus</artifactId>
-            <version>6.1.21</version>
         </dependency>
     </dependencies>
 
 
-   <build>
-     <plugins>
-       <plugin>
-         <groupId>org.apache.maven.plugins</groupId>
-         <artifactId>maven-dependency-plugin</artifactId>
-         <executions>
-           <execution>
-             <id>unpack-axis2-webapp</id>
-             <phase>package</phase>
-             <goals>
-               <goal>unpack</goal>
-             </goals>
-             <configuration>
-               <artifactItems>
-                 <artifactItem>
-                   <groupId>org.apache.axis2</groupId>
-                   <artifactId>axis2-webapp</artifactId>
-                   <version>${axis2.version}</version>
-                   <type>war</type>
-                   <overWrite>false</overWrite>
-                 </artifactItem>
-               </artifactItems>
-               <includes>axis2-web/**,WEB-INF/classes/org/**,WEB-INF/modules/*</includes>
-               <outputDirectory>${project.build.directory}/axis2-webapp</outputDirectory>
-               <overWriteReleases>false</overWriteReleases>
-               <overWriteSnapshots>false</overWriteSnapshots>
-             </configuration>
-           </execution>
-         </executions>
-        </plugin>
-         <plugin>
-             <groupId>org.apache.maven.plugins</groupId>
-             <artifactId>maven-antrun-plugin</artifactId>
-             <version>3.1.0</version>
-             <executions>
-               <execution>
-               <id>modify-and-copy</id>
-               <phase>package</phase>
-               <goals>
-                   <goal>run</goal>
-               </goals>
-               <configuration>
-                   <target>
-                       <copy file="src/main/webapp/WEB-INF/urlrewrite.xml"
-                             tofile="target/urlrewrite.xml"/>
-
-                       <replace file="target/urlrewrite.xml"
-                                token="${ode-console-version}"
-                                value="${ode-console.version}" />
-                   </target>
-               </configuration>
-                </execution>
-              </executions>
-         </plugin>
-         <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>war-package</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <configuration>
-              <finalName>ode-axis2-war-${project.version}</finalName>
-              <appendAssemblyId>false</appendAssemblyId>
-              <descriptors>
-                <descriptor>src/main/assembly/bin.xml</descriptor>
-              </descriptors>
-              <tarLongFileMode>gnu</tarLongFileMode>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-<!--      <plugin>-->
-<!--        <groupId>org.mortbay.jetty</groupId>-->
-<!--        <artifactId>maven-jetty-plugin</artifactId>-->
-<!--        <version>6.1.10</version>-->
-<!--        <configuration>-->
-<!--                <scanIntervalSeconds>10</scanIntervalSeconds>-->
-<!--                <stopKey>foo</stopKey>-->
-<!--                <stopPort>9999</stopPort>-->
-<!--                <webApp>${basedir}/target/ode-axis2-war-${project.version}.war</webApp>-->
-<!--        </configuration>-->
-<!--        <executions>-->
-<!--                <execution>-->
-<!--                        <id>start-jetty</id>-->
-<!--                        <phase>pre-integration-test</phase>-->
-<!--                        <goals>-->
-<!--                                <goal>run-war</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                                <scanIntervalSeconds>0</scanIntervalSeconds>-->
-<!--                                <daemon>true</daemon>-->
-<!--                        </configuration>-->
-<!--                </execution>-->
-<!--                <execution>-->
-<!--                        <id>stop-jetty</id>-->
-<!--                        <phase>post-integration-test</phase>-->
-<!--                        <goals>-->
-<!--                                <goal>stop</goal>-->
-<!--                        </goals>-->
-<!--                </execution>-->
-<!--        </executions>-->
-<!--      </plugin>-->
-		<plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-compiler-plugin</artifactId>
-			<executions>
-				<execution>
-					<id>compiler-it</id>
-					<phase>pre-integration-test</phase>
-					<goals>
-						<goal>testCompile</goal>
-					</goals>
-				</execution>
-			</executions>
-		</plugin>
-		<!-- FIXME: temporary commented out -->
-		<plugin>
-			<artifactId>maven-surefire-plugin</artifactId>
-			<configuration>
-				<includes>
-					<include>**/*TestCase.java</include>
-					<include>**/Test.java</include>
-				</includes>
-			</configuration>
-			<executions>
-				<execution>
-					<id>test-axis2-web</id>
-					<phase>integration-test</phase>
-					<goals>
-						<goal>test</goal>
-					</goals>
-				</execution>
-			</executions>
-		</plugin>
-     </plugins>
-   </build>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack-axis2-webapp</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.apache.axis2</groupId>
+                                    <artifactId>axis2-webapp</artifactId>
+                                    <version>${axis2.version}</version>
+                                    <type>war</type>
+                                    <overWrite>false</overWrite>
+                                </artifactItem>
+                            </artifactItems>
+                            <includes>axis2-web/**,WEB-INF/classes/org/**,WEB-INF/modules/*</includes>
+                            <outputDirectory>${project.build.directory}/axis2-webapp</outputDirectory>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>false</overWriteSnapshots>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>modify-and-copy</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <copy file="src/main/webapp/WEB-INF/urlrewrite.xml"
+                                      tofile="target/urlrewrite.xml"/>
+                                <replace file="target/urlrewrite.xml"
+                                         token="${ode-console-version}"
+                                         value="${ode-console.version}"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>war-package</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>ode-axis2-war-${project.version}</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <descriptors>
+                                <descriptor>src/main/assembly/bin.xml</descriptor>
+                            </descriptors>
+                            <tarLongFileMode>gnu</tarLongFileMode>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>compiler-it</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <id>resources-it</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>testResources</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.groovy.maven</groupId>
+                <artifactId>gmaven-plugin</artifactId>
+                <version>1.0</version>
+                <executions>
+                    <execution>
+                        <id>prepare-itests</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <configuration>
+                            <source>${pom.basedir}/itest_setup.groovy</source>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.surefire</groupId>
+                        <artifactId>surefire-testng</artifactId>
+                        <version>3.5.2</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <systemPropertyVariables>
+                        <log4j.configuration>test-log4j2.xml</log4j.configuration>
+                        <org.apache.ode.scheduler.deleteJobsOnStart>true</org.apache.ode.scheduler.deleteJobsOnStart>
+                        <org.apache.ode.autoRetireProcess>true</org.apache.ode.autoRetireProcess>
+                    </systemPropertyVariables>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>test-axis2-web</id>
+                        <phase>integration-test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <argLine>-Xms512M -Xmx1024M -Dlog4j.configurationFile=src/test/resources/test-log4j2.xml</argLine>
+                            <forkCount>1</forkCount>
+                            <reuseForks>false</reuseForks>
+                            <additionalClasspathElements>
+                                <additionalClasspathElement>${project.build.directory}</additionalClasspathElement>
+                            </additionalClasspathElements>
+                            <excludes>
+                                <exclude>**/NoInputMessageInvocationTest,java</exclude>
+                                <exclude>**/management/DeploymentTest.java</exclude>
+                                <exclude>**/management/InstanceManagementTest.java</exclude>
+                                <exclude>**/*EndpointConfigurationTest.java</exclude>
+                                <exclude>**/*HttpBindingTest.java</exclude>
+                                <exclude>**/rampart/basic/*Test.java</exclude>
+                                <exclude>**/rampart/policy/*Test.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
