@@ -49,7 +49,8 @@
                        <xmlConfig implementation="java.io.File">src/main/xsd/dd.xsdconfig</xmlConfig>
                        <xmlConfig implementation="java.io.File">src/main/xsd/pmapi.xsdconfig</xmlConfig>
                        <xmlConfig implementation="java.io.File">src/main/xsd/schedules.xsdconfig</xmlConfig>
-                   </xmlConfigs>
+	       </xmlConfigs>
+	       	   <noJavac>true</noJavac>
 		   <javaSource>1.5</javaSource>
 		</configuration>
 		<executions>
