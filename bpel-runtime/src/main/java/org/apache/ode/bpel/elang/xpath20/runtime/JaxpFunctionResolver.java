@@ -44,7 +44,6 @@ import net.sf.saxon.value.QNameValue;
 import net.sf.saxon.value.SequenceExtent;
 import net.sf.saxon.value.YearMonthDurationValue;
 
-import org.apache.commons.httpclient.URIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.ode.bpel.common.FaultException;
@@ -510,7 +509,7 @@ public class JaxpFunctionResolver implements XPathFunctionResolver {
                 } else {
                     return URITemplate.expand(uriTemplate, pairs);
                 }
-            } catch (URIException e) {
+            } catch (URISyntaxException e) {
                 throw new XPathFunctionException(new FaultException(faultQName, "Invalid argument", e));
             } catch (UnsupportedOperationException e) {
                 throw new XPathFunctionException(new FaultException(faultQName, "Invalid argument", e));
