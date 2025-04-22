@@ -19,6 +19,7 @@
 
 package org.apache.ode.axis2;
 
+import org.opensaml.xml.signature.J;
 import org.testng.annotations.Test;
 import static org.testng.AssertJUnit.assertTrue;
 
@@ -45,6 +46,7 @@ public class SelectorsTest extends Axis2TestBase implements ODEConfigDirAware {
     }
 
     public String getODEConfigDir() {
-        return HIB_H2_CONF_DIR;
+        return JPA_H2_CONF_DIR;
+        //return HIB_H2_CONF_DIR;
     }
 }

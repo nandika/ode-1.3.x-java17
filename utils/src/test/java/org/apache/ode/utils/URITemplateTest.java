@@ -23,7 +23,6 @@ import junit.framework.TestCase;
 
 import java.util.*;
 
-import org.apache.commons.httpclient.URIException;
 
 /**
  * @author <a href="mailto:midon@intalio.com">Alexis Midon</a>
@@ -75,7 +74,7 @@ public class URITemplateTest extends TestCase {
                 ,"hello {name=darling}! what's {this=up}?", new String[]{"name", "brother", "this", null}, "hello brother! what's up?"
                 ,"hello {name=darling}! what's {this=up}?", new String[]{"name", "brother"}, "hello brother! what's up?"
                 ,"hello {name}! what's {this}?", new String[]{"var_not_in_template", "foo"}, "hello ! what's ?"
-                ,"hello{name}what's{this}", new String[]{"name", " brother! ", "this", " this?"}, "hello%20brother!%20what's%20this%3F" // test encoding
+                ,"hello{name}what's{this}", new String[]{"name", " brother! ", "this", " this?"}, "hello%20brother!%20what's%20this%3F" // test encoding "hello%20brother!%20what's%20this%3F"
                 ,"hello{name= brother! }what's{this}", new String[]{"this", " this?"}, "hello%20brother!%20what's%20this%3F" // test encoding + default value
                 ,"hello {name=darling}! what's {this}?", new String[]{"name", "brother", "this", "{wrong}"}, "hello brother! what's %7Bwrong%7D?"
                 ,"hello%20brother!%20what's{this}", new String[]{"this", " this?"}, "hello%20brother!%20what's%20this%3F" // test template of template

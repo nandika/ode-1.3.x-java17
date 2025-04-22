@@ -29,18 +29,15 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.description.*;
 import org.apache.axis2.engine.AxisConfiguration;
+import org.apache.axis2.kernel.http.HTTPConstants;
 import org.apache.axis2.transport.jms.JMSConstants;
-import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.axis2.wsdl.WSDLConstants;
+import org.apache.hc.client5.http.io.HttpClientConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.neethi.Policy;
-import org.apache.neethi.PolicyEngine;
 import org.apache.ode.axis2.util.ClusterUrlTransformer;
 import org.apache.ode.axis2.util.SoapMessageConverter;
 import org.apache.ode.axis2.util.AxisUtils;
-import org.apache.ode.bpel.engine.BpelServerImpl;
 import org.apache.ode.bpel.epr.EndpointFactory;
 import org.apache.ode.bpel.epr.MutableEndpoint;
 import org.apache.ode.bpel.epr.WSAEndpoint;
@@ -63,15 +60,9 @@ import javax.wsdl.Fault;
 import javax.wsdl.Operation;
 import javax.xml.namespace.QName;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URL;
-import java.net.MalformedURLException;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
-import java.lang.reflect.Field;
 
 /**
  * Acts as a service not provided by ODE. Used mainly for invocation as a way to maintain the WSDL description of used
@@ -106,7 +97,7 @@ public class SoapExternalService implements ExternalService {
     private String endpointUrl;
 
     public SoapExternalService(ProcessConf pconf, QName serviceName, String portName, ExecutorService executorService,
-            ConfigurationContext configContext, Scheduler sched, BpelServer server, MultiThreadedHttpConnectionManager connManager, ClusterUrlTransformer clusterUrlTransformer) throws AxisFault {
+                               ConfigurationContext configContext, Scheduler sched, BpelServer server, HttpClientConnectionManager connManager, ClusterUrlTransformer clusterUrlTransformer) throws AxisFault {
         _definition = pconf.getDefinitionForService(serviceName);
         _serviceName = serviceName;
         _portName = portName;

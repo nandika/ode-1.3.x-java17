@@ -20,6 +20,11 @@
 package org.apache.ode.axis2.rampart.policy;
 
 import static org.testng.AssertJUnit.assertTrue;
+
+import org.apache.axiom.om.*;
+import org.apache.axiom.om.util.AXIOMUtil;
+import org.apache.ode.axis2.util.AxisUtils;
+import org.apache.xml.utils.XMLReaderManager;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
@@ -29,11 +34,6 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.client.ServiceClient;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.addressing.EndpointReference;
-import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.OMNamespace;
-import org.apache.axiom.om.OMAbstractFactory;
-import org.apache.axiom.om.OMFactory;
-import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.ode.utils.DOMUtils;
 import org.apache.ode.il.OMUtils;
 import org.apache.ode.axis2.Axis2TestBase;
@@ -43,6 +43,7 @@ import org.apache.rampart.RampartMessageData;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.InputStream;
 
 /**
  *
@@ -119,8 +120,9 @@ public class SecuredProcessesTest extends Axis2TestBase {
     }
 
     private static Policy loadPolicy(String xmlPath) throws Exception {
-        StAXOMBuilder builder = new StAXOMBuilder(xmlPath);
-        return PolicyEngine.getPolicy(builder.getDocumentElement());
+        InputStream is = SecuredProcessesTest.class.getClassLoader().getResourceAsStream(xmlPath);
+        OMXMLParserWrapper omBuilder = OMXMLBuilderFactory.createOMBuilder(is);
+        return PolicyEngine.getPolicy(omBuilder.getDocumentElement());
     }
 
     private static OMElement getPayload(String value) {

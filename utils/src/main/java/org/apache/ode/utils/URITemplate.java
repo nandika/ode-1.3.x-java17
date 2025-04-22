@@ -19,11 +19,20 @@
 
 package org.apache.ode.utils;
 
-import org.apache.commons.httpclient.URIException;
-import org.apache.commons.httpclient.util.URIUtil;
+
+
+
+import org.apache.commons.codec.net.URLCodec;
+import org.apache.hc.core5.net.URLEncodedUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.print.URIException;
+import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -127,7 +136,7 @@ public class URITemplate {
      * @param nameValuePairs an array containing of name, value, name, value, and so on.  Null values are allowed.
      * @see # expand (String, java.util.Map)
      */
-    public static String expand(String uriTemplate, String... nameValuePairs) throws URIException, UnsupportedOperationException {
+    public static String expand(String uriTemplate, String... nameValuePairs) throws URISyntaxException, UnsupportedOperationException {
         return expand(uriTemplate, toMap(nameValuePairs));
     }
 
@@ -147,7 +156,7 @@ public class URITemplate {
      * @throws UnsupportedOperationException if the operation is not supported. Currently only var substitution is supported.
      * @see #varSubstitution(String, Object[], java.util.Map)
      */
-    public static String expand(String uriTemplate, Map<String, String> nameValuePairs) throws URIException, UnsupportedOperationException {
+    public static String expand(String uriTemplate, Map<String, String> nameValuePairs) throws URISyntaxException, UnsupportedOperationException {
         return expand(uriTemplate, nameValuePairs, false);
     }
 
@@ -177,14 +186,14 @@ public class URITemplate {
      *
      * @see #expand(String, java.util.Map)
      */
-    public static String expandLazily(String uriTemplate, Map<String, String> nameValuePairs) throws URIException, UnsupportedOperationException {
+    public static String expandLazily(String uriTemplate, Map<String, String> nameValuePairs) throws URISyntaxException, UnsupportedOperationException {
         return expand(uriTemplate, nameValuePairs, true);
     }
 
     /**
      * @see #expandLazily(String, java.util.Map)
      */
-    public static String expandLazily(String uriTemplate, String... nameValuePairs) throws URIException {
+    public static String expandLazily(String uriTemplate, String... nameValuePairs) throws URISyntaxException {
         return expandLazily(uriTemplate, toMap(nameValuePairs));
     }
 
@@ -193,7 +202,7 @@ public class URITemplate {
      * @see #varSubstitution(String, Object[], java.util.Map, boolean)
      * @see #expandLazily(String, String[])
      */
-    private static String expand(String uriTemplate, Map<String, String> nameValuePairs, boolean preserveUndefinedVar) throws URIException, UnsupportedOperationException {
+    private static String expand(String uriTemplate, Map<String, String> nameValuePairs, boolean preserveUndefinedVar) throws URISyntaxException, UnsupportedOperationException {
         Matcher m = PATTERN.matcher(uriTemplate);
         // Strings are immutable in java
         // so let's use a buffer, and append all substrings between 2 matches and the replacement value for each match 
@@ -240,10 +249,10 @@ public class URITemplate {
      * @param nameValuePairs   the Map<String, String> of names and associated values. May containt null values.
      * @return the expanded string, properly escaped.
      * @throws URIException if an encoding exception occured
-     * @see org.apache.commons.httpclient.util.URIUtil#encodeWithinQuery(String)
+     * @see //org.apache.commons.httpclient.util.URIUtil#encodeWithinQuery(String)
      * @see java.net.URI
      */
-    public static String varSubstitution(String expansionPattern, Object[] expansionInfo, Map<String, String> nameValuePairs) throws URIException {
+    public static String varSubstitution(String expansionPattern, Object[] expansionInfo, Map<String, String> nameValuePairs) throws URISyntaxException {
         return varSubstitution(expansionPattern, expansionInfo, nameValuePairs, false);
     }
 
@@ -270,7 +279,7 @@ public class URITemplate {
      * <br/>{foo}
      * <br/>{foo}
      */
-    public static String varSubstitution(String expansionPattern, Object[] expansionInfo, Map<String, String> nameValuePairs, boolean preserveUndefinedVar) throws URIException {
+    public static String varSubstitution(String expansionPattern, Object[] expansionInfo, Map<String, String> nameValuePairs, boolean preserveUndefinedVar) throws URISyntaxException {
         Map vars = (Map) expansionInfo[2];
         // only one var per pattern
         Map.Entry e = (Map.Entry) vars.entrySet().iterator().next();
@@ -306,9 +315,14 @@ public class URITemplate {
         // We assume that the replacement value is for the query part of the URI.
         // Actually the query allows less character than the path part. $%&+,:@
         // (acording to RFC2396
-        return escapingNeeded ? URIUtil.encodeWithinQuery(res) : res;
-    }
 
+        // return escapingNeeded ? URIUtils.encodeWithinQuery(res) : res;
+        try {
+            return escapingNeeded ? encodeWithinQuery(res, StandardCharsets.UTF_8.toString()) : res;
+        } catch (UnsupportedEncodingException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
 
     private static Map<String, String> toMap(String... nameValuePairs) {
         if (nameValuePairs.length % 2 != 0) {
@@ -320,4 +334,172 @@ public class URITemplate {
         }
         return m;
     }
+
+    protected static final BitSet percent = new BitSet(256);
+    // Static initializer for percent
+    static {
+        percent.set('%');
+    }
+
+
+    protected static final BitSet reserved = new BitSet(256);
+    // Static initializer for reserved
+    static {
+        reserved.set(';');
+        reserved.set('/');
+        reserved.set('?');
+        reserved.set(':');
+        reserved.set('@');
+        reserved.set('&');
+        reserved.set('=');
+        reserved.set('+');
+        reserved.set('$');
+        reserved.set(',');
+    }
+
+    protected static final BitSet digit = new BitSet(256);
+    // Static initializer for digit
+    static {
+        for (int i = '0'; i <= '9'; i++) {
+            digit.set(i);
+        }
+    }
+
+    protected static final BitSet hex = new BitSet(256);
+    // Static initializer for hex
+    static {
+        hex.or(digit);
+        for (int i = 'a'; i <= 'f'; i++) {
+            hex.set(i);
+        }
+        for (int i = 'A'; i <= 'F'; i++) {
+            hex.set(i);
+        }
+    }
+
+    protected static final BitSet escaped = new BitSet(256);
+    // Static initializer for escaped
+    static {
+        escaped.or(percent);
+        escaped.or(hex);
+    }
+
+    protected static final BitSet alpha = new BitSet(256);
+    // Static initializer for alpha
+    static {
+        for (int i = 'a'; i <= 'z'; i++) {
+            alpha.set(i);
+        }
+        for (int i = 'A'; i <= 'Z'; i++) {
+            alpha.set(i);
+        }
+    }
+
+
+    /**
+     * BitSet for alphanum (join of alpha &amp; digit).
+     * <p><blockquote><pre>
+     *  alphanum      = alpha | digit
+     * </pre></blockquote><p>
+     */
+    protected static final BitSet alphanum = new BitSet(256);
+    // Static initializer for alphanum
+    static {
+        alphanum.or(alpha);
+        alphanum.or(digit);
+    }
+
+    protected static final BitSet mark = new BitSet(256);
+    // Static initializer for mark
+    static {
+        mark.set('-');
+        mark.set('_');
+        mark.set('.');
+        mark.set('!');
+        mark.set('~');
+        mark.set('*');
+        mark.set('\'');
+        mark.set('(');
+        mark.set(')');
+    }
+
+
+    /**
+     * Data characters that are allowed in a URI but do not have a reserved
+     * purpose are called unreserved.
+     * <p><blockquote><pre>
+     * unreserved    = alphanum | mark
+     * </pre></blockquote><p>
+     */
+    protected static final BitSet unreserved = new BitSet(256);
+    // Static initializer for unreserved
+    static {
+        unreserved.or(alphanum);
+        unreserved.or(mark);
+    }
+    /**
+     * BitSet for uric.
+     * <p><blockquote><pre>
+     * uric          = reserved | unreserved | escaped
+     * </pre></blockquote><p>
+     */
+    protected static final BitSet uric = new BitSet(256);
+    // Static initializer for uric
+    static {
+        uric.or(reserved);
+        uric.or(unreserved);
+        uric.or(escaped);
+    }
+
+
+    public static final BitSet allowed_query = new BitSet(256);
+    // Static initializer for allowed_query
+    static {
+        allowed_query.or(uric);
+        allowed_query.clear('%');
+    }
+
+
+    public static final BitSet allowed_within_query = new BitSet(256);
+    // Static initializer for allowed_within_query
+    static {
+        allowed_within_query.or(allowed_query);
+        allowed_within_query.andNot(reserved); // excluded 'reserved'
+    }
+
+    public static byte[] getBytes(final String data, String charset) {
+
+        if (data == null) {
+            throw new IllegalArgumentException("data may not be null");
+        }
+
+        if (charset == null || charset.length() == 0) {
+            throw new IllegalArgumentException("charset may not be null or empty");
+        }
+
+        try {
+            return data.getBytes(charset);
+        } catch (UnsupportedEncodingException e) {
+
+            return data.getBytes();
+        }
+    }
+
+
+
+    public static String encode(String unescaped, BitSet allowed,
+                                String charset) throws URISyntaxException, UnsupportedEncodingException {
+        byte[] rawdata = URLCodec.encodeUrl(allowed,
+                getBytes(unescaped, charset));
+        String str = new String(rawdata, 0, rawdata.length, "US-ASCII");
+        return str;
+    }
+
+    public static String encodeWithinQuery(String unescaped, String charset)
+            throws URISyntaxException, UnsupportedEncodingException {
+
+        return encode(unescaped, allowed_within_query, charset);
+    }
+
+
 }

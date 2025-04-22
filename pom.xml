@@ -74,8 +74,9 @@
         <ode.version>1.3.9-SNAPSHOT</ode.version>
         <ant.version>1.6.5</ant.version>
         <annogen.version>0.1.0</annogen.version>
-        <axiom.version>1.2.20</axiom.version>
-        <axis2.version>1.7.6</axis2.version>
+        <axiom.version>2.0.0</axiom.version>
+        <axis2.version>2.0.1-SNAPSHOT</axis2.version>
+<!--        <axis2.version>2.0.0</axis2.version>-->
         <activation.version>1.1</activation.version>
         <antlr.version>2.7.7</antlr.version>
 
@@ -84,7 +85,8 @@
         <commons.collections.version>3.2.2</commons.collections.version>
         <commons.dbcp.version>1.4</commons.dbcp.version>
         <commons.fileupload.version>1.3.3</commons.fileupload.version>
-        <commons.httpclient.version>3.1</commons.httpclient.version>
+        <httpclient.version>5.4.2</httpclient.version>
+        <httpcore.version>5.3.1</httpcore.version>
         <commons.lang.version>2.6</commons.lang.version>
         <commons.logging.version>1.1.1</commons.logging.version>
         <commons.io.version>2.1</commons.io.version>
@@ -217,7 +219,19 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.5.2</version>
+                    <configuration>
+                        <argLine>
+                            --add-opens java.base/java.lang=ALL-UNNAMED
+                            --add-opens java.base/java.io=ALL-UNNAMED
+                            --add-opens java.base/java.util=ALL-UNNAMED
+                        </argLine>
+                    </configuration>
                 </plugin>
+<!--                <plugin>-->
+<!--                    <groupId>org.apache.maven.plugins</groupId>-->
+<!--                    <artifactId>maven-surefire-plugin</artifactId>-->
+<!--                    <version>3.5.2</version>-->
+<!--                </plugin>-->
 
 
                 <!--|
@@ -307,7 +321,7 @@
         <repository>
             <id>central</id>
             <name>Maven Repository Switchboard</name>
-            <url>https://repo.maven.org/maven2</url>
+            <url>https://repo1.maven.org/maven2</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -568,9 +582,14 @@
                 <version>${commons.collections.version}</version>
             </dependency>
             <dependency>
-                <groupId>commons-httpclient</groupId>
-                <artifactId>commons-httpclient</artifactId>
-                <version>${commons.httpclient.version}</version>
+                <groupId>org.apache.httpcomponents.client5</groupId>
+                <artifactId>httpclient5</artifactId>
+                <version>${httpclient.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents.core5</groupId>
+                <artifactId>httpcore5</artifactId>
+                <version>${httpcore.version}</version>
             </dependency>
             <dependency>
                 <groupId>commons-lang</groupId>
@@ -647,10 +666,16 @@
                 <artifactId>geronimo-stax-api_1.0_spec</artifactId>
                 <version>${geronimo.stax-api.version}</version>
             </dependency>
+<!--            <dependency>-->
+<!--                <groupId>org.apache.geronimo.specs</groupId>-->
+<!--                <artifactId>geronimo-servlet_2.4_spec</artifactId>-->
+<!--                <version>${geronimo-servlet.version}</version>-->
+<!--            </dependency>-->
             <dependency>
-                <groupId>org.apache.geronimo.specs</groupId>
-                <artifactId>geronimo-servlet_2.4_spec</artifactId>
-                <version>${geronimo-servlet.version}</version>
+                <groupId>jakarta.servlet</groupId>
+                <artifactId>jakarta.servlet-api</artifactId>
+                <version>6.1.0</version>
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
@@ -1167,11 +1192,6 @@
             </dependency>
             <dependency>
                 <groupId>org.opensaml</groupId>
-                <artifactId>openws</artifactId>
-                <version>${openws.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.opensaml</groupId>
                 <artifactId>xmltooling</artifactId>
                 <version>${xmltooling.version}</version>
             </dependency>
@@ -1199,6 +1219,11 @@
                 <groupId>org.apache.james</groupId>
                 <artifactId>apache-mime4j-core</artifactId>
                 <version>${mime4j-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.groovy</groupId>
+                <artifactId>groovy</artifactId>
+                <version>3.0.19</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

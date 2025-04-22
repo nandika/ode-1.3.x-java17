@@ -20,15 +20,12 @@
 package org.apache.ode.axis2.httpbinding;
 
 import org.apache.axis2.transport.http.HttpTransportProperties;
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.HostConfiguration;
-import org.apache.commons.httpclient.HttpState;
-import org.apache.commons.httpclient.NTCredentials;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.URIException;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.params.HttpParams;
+import org.apache.hc.client5.http.auth.*;
+import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
+import org.apache.hc.core5.http.HttpHost;
 import org.apache.ode.utils.Properties;
+
+import java.net.URISyntaxException;
 
 
 /**
@@ -43,7 +40,7 @@ public class ProxyConf {
     public static final String HTTP_PROXY_PORT = "http.proxyPort";
     public static final String HTTP_NON_PROXY_HOSTS = "http.nonProxyHosts";
 
-    public static void configure(HostConfiguration hostConfig, HttpState state, HttpTransportProperties.ProxyProperties proxyProperties) {
+    public static void configure(HttpExternalService.HttpClientConfig clientConfig, HttpTransportProperties.ProxyProperties proxyProperties) {
         String proxyHost = proxyProperties.getProxyHostName();
         int proxyPort = proxyProperties.getProxyPort();
 
@@ -54,25 +51,29 @@ public class ProxyConf {
 
         Credentials proxyCred;
         if (userName != null && password != null && domain != null) {
-            proxyCred = new NTCredentials(userName, password, proxyHost, domain);
+            proxyCred = new NTCredentials(userName, password.toCharArray(), null, domain);
         } else if (userName != null) {
-            proxyCred = new UsernamePasswordCredentials(userName, password);
+            proxyCred = new UsernamePasswordCredentials(userName, password != null ? password.toCharArray() : null);
         } else {
-            proxyCred = new UsernamePasswordCredentials("", "");
+            proxyCred = new UsernamePasswordCredentials("", "".toCharArray());
         }
+
 
         //Using Java Networking Properties
         String host = System.getProperty(HTTP_PROXY_HOST);
         if (host != null) {
             proxyHost = host;
-            proxyCred = new UsernamePasswordCredentials("", "");
+            proxyCred = new UsernamePasswordCredentials("", "".toCharArray());
         }
         String port = System.getProperty(HTTP_PROXY_PORT);
         if (port != null) {
             proxyPort = Integer.parseInt(port);
         }
-        state.setProxyCredentials(AuthScope.ANY, proxyCred);
-        hostConfig.setProxy(proxyHost, proxyPort);
+        // proxy credentials are definitely available here
+            HttpHost proxy = new HttpHost(proxyHost, proxyPort);
+            AuthScope authScope = new AuthScope(proxy);
+            clientConfig.setProxy(proxy);
+            clientConfig.getCredentialsProvider().setCredentials(authScope, proxyCred);
     }
 
     /**
@@ -80,9 +81,9 @@ public class ProxyConf {
      * and the host is not mentionnned in the system property "http.nonProxyHosts"  
      * @see Properties#PROP_HTTP_PROXY_PREFIX
      */
-    public static boolean isProxyEnabled(HttpParams params, String targetHost) throws URIException {
+    public static boolean isProxyEnabled(Boolean isSet, String targetHost) throws URISyntaxException {
         // from IL properties
-        boolean isSet = params.isParameterSet(Properties.PROP_HTTP_PROXY_PREFIX);
+        //boolean isSet = params.isParameterSet(Properties.PROP_HTTP_PROXY_PREFIX);
         // from Java Networking Properties
         isSet |= System.getProperty(HTTP_PROXY_HOST) != null;
 
@@ -97,11 +98,19 @@ public class ProxyConf {
      */
     public static boolean isNonProxyHost(String targetHost) {
         String nonProxyHosts = System.getProperty(HTTP_NON_PROXY_HOSTS);
-        if (nonProxyHosts != null) {
+        if (nonProxyHosts != null && targetHost != null) {
             String[] splitted = nonProxyHosts.split("\\|");
             for (int i = 0; i < splitted.length; i++) {
                 if (targetHost.matches(splitted[i])) return true;
             }
+//            for (String pattern : splitted) {
+//                // Convert wildcard pattern to regex (e.g., "*.example.com" to ".*\.example\.com")
+//                String regex = Pattern.quote(pattern).replace("*", "\\E.*\\Q");
+//                if (Pattern.matches(regex, targetHost)) {
+//                    return true;
+//                }
+//            }
+
         }
         return false;
     }

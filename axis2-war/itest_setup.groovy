@@ -19,6 +19,9 @@
 
 import java.io.File
 
+def ant = new AntBuilder()
+
+
 def warname = project.build.directory+"/"+project.build.finalName+".war";
 def webapp = project.build.directory + "/webapp";
 def testresources = new File(project.basedir, 'src/test/webapp')

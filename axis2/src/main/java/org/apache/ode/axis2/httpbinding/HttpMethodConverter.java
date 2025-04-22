@@ -19,21 +19,18 @@
 
 package org.apache.ode.axis2.httpbinding;
 
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.methods.DeleteMethod;
-import org.apache.commons.httpclient.methods.EntityEnclosingMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.PutMethod;
-import org.apache.commons.httpclient.methods.RequestEntity;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
-import org.apache.commons.httpclient.params.HostParams;
-import org.apache.commons.httpclient.params.HttpParams;
 import org.apache.commons.lang.StringUtils;
+import org.apache.hc.client5.http.async.methods.SimpleHttpResponse;
+import org.apache.hc.client5.http.classic.methods.*;
+import org.apache.hc.core5.http.*;
+import org.apache.hc.core5.http.config.Http1Config;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.apache.hc.core5.http.message.StatusLine;
+import org.apache.hc.core5.net.URIBuilder;
+import org.apache.ode.utils.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.ode.utils.Properties;
 import org.apache.ode.axis2.util.URLEncodedTransformer;
 import org.apache.ode.axis2.util.UrlReplacementTransformer;
 import org.apache.ode.bpel.epr.MutableEndpoint;
@@ -65,18 +62,20 @@ import javax.wsdl.extensions.mime.MIMEContent;
 import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.HashSet;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 public class HttpMethodConverter {
 
     private static final Logger log = LoggerFactory.getLogger(HttpMethodConverter.class);
 
     protected static final Messages msgs = Messages.getMessages(Messages.class);
+    public static final String FORM_URL_ENCODED_CONTENT_TYPE = "application/x-www-form-urlencoded";
+
+
     protected Definition definition;
     protected Binding binding;
     protected QName serviceName;
@@ -90,11 +89,11 @@ public class HttpMethodConverter {
     }
 
 
-    public HttpMethod createHttpRequest(PartnerRoleMessageExchange odeMex, HttpParams params) throws UnsupportedEncodingException {
-        return createHttpRequest(odeMex, params, ((MutableEndpoint) odeMex.getEndpointReference()).getUrl());
+    public ClassicHttpRequest createHttpRequest(PartnerRoleMessageExchange odeMex, Map<String, String> endpointProperties) throws UnsupportedEncodingException {
+        return createHttpRequest(odeMex, endpointProperties, ((MutableEndpoint) odeMex.getEndpointReference()).getUrl());
     }
     
-    public HttpMethod createHttpRequest(PartnerRoleMessageExchange odeMex, HttpParams params, String baseUrl) throws UnsupportedEncodingException {
+    public HttpUriRequestBase createHttpRequest(PartnerRoleMessageExchange odeMex, Map<String, String> endpointProperties, String baseUrl) throws UnsupportedEncodingException {
         Operation operation = odeMex.getOperation();
         BindingOperation bindingOperation = binding.getBindingOperation(operation.getName(), operation.getInput().getName(), operation.getOutput().getName());
 
@@ -110,9 +109,14 @@ public class HttpMethodConverter {
         String verb = WsdlUtils.resolveVerb(binding, bindingOperation);
 
         // build the http method itself
-        HttpMethod method = prepareHttpMethod(bindingOperation, verb, partElements, odeMex.getRequest().getHeaderParts(), baseUrl, params);
+        HttpUriRequestBase request = null;
+        try {
+            request = prepareHttpMethod(bindingOperation, verb, partElements, odeMex.getRequest().getHeaderParts(), baseUrl, endpointProperties);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
 
-        return method;
+        return request;
     }
 
 
@@ -123,24 +127,24 @@ public class HttpMethodConverter {
      * See usages of HostParams.DEFAULT_HEADERS
      * See org.apache.commons.httpclient.HttpMethodDirector#executeMethod(org.apache.commons.httpclient.HttpMethod)
      */
-    protected HttpMethod prepareHttpMethod(BindingOperation opBinding, String verb, Map<String, Element> partValues, Map<String, Node> headers,
-                                           final String rootUri, HttpParams params) throws UnsupportedEncodingException {
+    protected HttpUriRequestBase prepareHttpMethod(BindingOperation opBinding, String verb, Map<String, Element> partValues, Map<String, Node> headers,
+                                           final String rootUri, Map<String, String> endpointProperties) throws UnsupportedEncodingException, URISyntaxException {
         if (log.isDebugEnabled()) log.debug("Preparing http request...");
         // convenience variables...
         BindingInput bindingInput = opBinding.getBindingInput();
         HTTPOperation httpOperation = (HTTPOperation) WsdlUtils.getOperationExtension(opBinding);
         MIMEContent content = WsdlUtils.getMimeContent(bindingInput.getExtensibilityElements());
         String contentType = content == null ? null : content.getType();
-        boolean useUrlEncoded = WsdlUtils.useUrlEncoded(bindingInput) || PostMethod.FORM_URL_ENCODED_CONTENT_TYPE.equalsIgnoreCase(contentType);
+
+        boolean useUrlEncoded = WsdlUtils.useUrlEncoded(bindingInput) || FORM_URL_ENCODED_CONTENT_TYPE.equalsIgnoreCase(contentType);
         boolean useUrlReplacement = WsdlUtils.useUrlReplacement(bindingInput);
 
         // the http method to be built and returned
-        HttpMethod method = null;
 
         // the 4 elements the http method may be made of
         String relativeUri = httpOperation.getLocationURI();
         String queryPath = null;
-        RequestEntity requestEntity;
+        HttpEntity requestEntity;
         String encodedParams = null;
 
         // ODE supports uri template in both port and operation location.
@@ -157,7 +161,9 @@ public class HttpMethodConverter {
             // encode part values
             encodedParams = new URLEncodedTransformer().transform(partValues);
         }
-        log.debug("completeUri {}, encodedParams {}",completeUri,encodedParams);
+        if(log.isDebugEnabled()) {
+            log.debug("completeUri {}, encodedParams {}", completeUri, encodedParams);
+        }
         // http-client api is not really neat
         // something similar to the following would save some if/else manipulations.
         // But we have to deal with it as-is.
@@ -165,35 +171,48 @@ public class HttpMethodConverter {
         //  method = new Method(verb);
         //  method.setRequestEnity(..)
         //  etc...
-        if ("GET".equalsIgnoreCase(verb) || "DELETE".equalsIgnoreCase(verb)) {
-            if ("GET".equalsIgnoreCase(verb)) {
-                method = new GetMethod();
-            } else if ("DELETE".equalsIgnoreCase(verb)) {
-                method = new DeleteMethod();
-            }
-            method.getParams().setDefaults(params);
-            if (useUrlEncoded) {
-                queryPath = encodedParams;
-            }
 
+        HttpUriRequestBase request = null;
+
+        if ("GET".equalsIgnoreCase(verb) || "DELETE".equalsIgnoreCase(verb)) {
+            URIBuilder uriBuilder = new URIBuilder(completeUri);
+            if (useUrlEncoded && encodedParams != null) {
+                for (String param : encodedParams.split("&")) {
+                    String[] kv = param.split("=", 2);
+                    uriBuilder.addParameter(URLDecoder.decode(kv[0], StandardCharsets.UTF_8.name()),
+                            kv.length > 1 ? URLDecoder.decode(kv[1], StandardCharsets.UTF_8.name()) : "");
+                }
+            }
+            if ("GET".equalsIgnoreCase(verb)) {
+                request = new HttpGet(uriBuilder.toString());
+            } else if ("DELETE".equalsIgnoreCase(verb)) {
+                request = new HttpDelete(uriBuilder.toString());
+            }
             // Let http-client manage the redirection
             // see org.apache.commons.httpclient.params.HttpClientParams.MAX_REDIRECTS
             // default is 100
-            method.setFollowRedirects(true);
+           // method.setFollowRedirects(true);
         } else if ("POST".equalsIgnoreCase(verb) || "PUT".equalsIgnoreCase(verb)) {
-
+            HttpUriRequestBase entityRequest = null;
             if ("POST".equalsIgnoreCase(verb)) {
-                method = new PostMethod();
+                entityRequest = new HttpPost(completeUri);
+
             } else if ("PUT".equalsIgnoreCase(verb)) {
-                method = new PutMethod();
+                entityRequest = new HttpPut(completeUri);
             }
-            method.getParams().setDefaults(params);
+            String contentCharset = StandardCharsets.UTF_8.name();
+            ContentType ctype= null;
+            if(content != null) {
+                ctype = ContentType.create(contentType,  contentCharset);
+            }
+            //method.getParams().setDefaults(params);
             // some body-building...
-            final String contentCharset = method.getParams().getContentCharset();
+            //final String contentCharset = method.getParams().getContentCharset();
             if (log.isDebugEnabled()) log.debug("Content-Type [" + contentType + "] Charset [" + contentCharset + "]");
             if (useUrlEncoded) {
                 encodedParams = new URLEncodedTransformer().transform(partValues);
-                requestEntity = new StringRequestEntity(encodedParams, PostMethod.FORM_URL_ENCODED_CONTENT_TYPE, contentCharset);
+
+                requestEntity = new StringEntity(encodedParams, ctype);
             } else {
                 // get the part to be put in the body
                 Part part = opBinding.getOperation().getInput().getMessage().getPart(content.getPart());
@@ -207,64 +226,72 @@ public class HttpMethodConverter {
                     if (log.isDebugEnabled()) log.debug("Content-Type [" + contentType + "] equivalent to 'text/xml'");
                     // stringify the first element
                     String xmlString = DOMUtils.domToString(DOMUtils.getFirstChildElement(partValue));
-                    requestEntity = new StringRequestEntity(xmlString, contentType, contentCharset);
+                    requestEntity = new StringEntity(xmlString, ctype);
                 } else {
                     if (log.isDebugEnabled())
                         log.debug("Content-Type [" + contentType + "] NOT equivalent to 'text/xml'. The text content of part value will be sent as text");
                     // encoding conversion is managed by StringRequestEntity if necessary
-                    requestEntity = new StringRequestEntity(DOMUtils.getTextContent(partValue), contentType, contentCharset);
+                    requestEntity = new StringEntity(DOMUtils.getTextContent(partValue), ctype);
                 }
             }
 
-            // cast safely, PUT and POST are subclasses of EntityEnclosingMethod
-            final EntityEnclosingMethod enclosingMethod = (EntityEnclosingMethod) method;
-            enclosingMethod.setRequestEntity(requestEntity);
-            enclosingMethod.setContentChunked(params.getBooleanParameter(Properties.PROP_HTTP_REQUEST_CHUNK, false));
 
+            entityRequest.setEntity(requestEntity);
+            // cast safely, PUT and POST are subclasses of EntityEnclosingMethod
+//            final EntityEnclosingMethod enclosingMethod = (EntityEnclosingMethod) method;
+//            enclosingMethod.setRequestEntity(requestEntity);
+//            enclosingMethod.setContentChunked(params.getBooleanParameter(Properties.PROP_HTTP_REQUEST_CHUNK, false));
+            request = entityRequest;
         } else {
             // should not happen because of HttpBindingValidator, but never say never
             throw new IllegalArgumentException("Unsupported HTTP method: " + verb);
         }
 
-        method.setPath(completeUri); // assumes that the path is properly encoded (URL safe).
-        method.setQueryString(queryPath);
+//        method.setPath(completeUri); // assumes that the path is properly encoded (URL safe).
+//        method.setQueryString(queryPath);
 
-        // set headers
-        setHttpRequestHeaders(method, opBinding, partValues, headers, params);
-        return method;
+
+        setHttpRequestHeaders(request, opBinding, partValues, headers);
+        return request;
     }
 
+    public void translate(Map<String, String> endpointProperties, ClassicHttpRequest request) {
+
+    }
     /**
      * First go through the list of default headers set in the method params. This param is then remove to avoid interference with HttpClient.
      * Actually the default headers should be overriden by any headers set from the process.
      * Not to mention that, for a given header, HttpClient do not overwrite any previous values but simply append the default value.<br/>
-     *  See {@link see org.apache.commons.httpclient.params.HostParams.DEFAULT_HEADERS}
+     *  See {@link //see org.apache.commons.httpclient.params.HostParams.DEFAULT_HEADERS}
      * <p/>
      * Then go through the list of message headers and set them if empty.
      * <p/>
-     * Finally go through the list of {@linkplain Namespaces.ODE_HTTP_EXTENSION_NS}{@code :header} elements included in the input binding.
-     * For each of them, set the HTTP Request Header with the static value defined by the attribute {@linkplain Namespaces.ODE_HTTP_EXTENSION_NS}{@code :value},
-     * or the part value mentioned in the attribute {@linkplain Namespaces.ODE_HTTP_EXTENSION_NS}{@code :part}.
+     * Finally go through the list of {@linkplain //Namespaces.ODE_HTTP_EXTENSION_NS}{@code :header} elements included in the input binding.
+     * For each of them, set the HTTP Request Header with the static value defined by the attribute {@linkplain //Namespaces.ODE_HTTP_EXTENSION_NS}{@code :value},
+     * or the part value mentioned in the attribute {@linkplain //Namespaces.ODE_HTTP_EXTENSION_NS}{@code :part}.
      * <p/>
      * Finally, set the 'Accept' header if the output content type of the operation exists.
      * <p/>
      * Notice that the last header value overrides any values set previoulsy. Meaning that message headers might get overriden by parts bound to headers.
      *
      */
-    public void setHttpRequestHeaders(HttpMethod method, BindingOperation opBinding, Map<String, Element> partValues, Map<String, Node> headers, HttpParams params) {
+    public void setHttpRequestHeaders(ClassicHttpRequest request, BindingOperation opBinding, Map<String, Element> partValues, Map<String, Node> headers) {
         BindingInput inputBinding = opBinding.getBindingInput();
         Message inputMessage = opBinding.getOperation().getInput().getMessage();
 
         // Do not let HttpClient manage the default headers
         // Actually the default headers should be overriden by any headers set from the process.
         // (Not to mention that, for a given header, HttpClient do not overwrite any previous values but simply append the default value)
-        Collection defaultHeaders = (Collection) params.getParameter(HostParams.DEFAULT_HEADERS);
-        if (defaultHeaders != null) {
-            Iterator i = defaultHeaders.iterator();
-            while (i.hasNext()) {
-                method.setRequestHeader((Header) i.next());
-            }
-        }
+// configure default headers at requestConfig
+//        Collection defaultHeaders = (Collection) params.getParameter(Properties.DEFAULT_HEADERS);
+//        if (defaultHeaders != null) {
+//            for(Object header : defaultHeaders) {
+//                if (header instanceof Header) {
+//                    Header h = (Header) header;
+//                    request.setHeader(h.getName(), h.getValue());
+//                }
+//            }
+//        }
 
         // process message headers
         for (Iterator<Map.Entry<String, Node>> iterator = headers.entrySet().iterator(); iterator.hasNext();) {
@@ -272,7 +299,7 @@ public class HttpMethodConverter {
             String headerName = e.getKey();
             Node headerNode = e.getValue();
             String headerValue = DOMUtils.domToString(headerNode);
-            method.setRequestHeader(headerName, HttpHelper.replaceCRLFwithLWS(headerValue));
+            request.addHeader(headerName, HttpHelper.replaceCRLFwithLWS(headerValue));
         }
 
         // process parts that are bound to message parts
@@ -322,15 +349,17 @@ public class HttpMethodConverter {
             }
             // do not set the header isf the value is empty
             if (StringUtils.isNotEmpty(headerValue))
-                method.setRequestHeader(headerName, HttpHelper.replaceCRLFwithLWS(headerValue));
+                request.addHeader(headerName, HttpHelper.replaceCRLFwithLWS(headerValue));
         }
 
-        MIMEContent outputContent = WsdlUtils.getMimeContent(opBinding.getBindingOutput().getExtensibilityElements());
-        // set Accept header if output content type is set
-        if (outputContent != null) {
-            method.setRequestHeader("Accept", outputContent.getType());
+        BindingOutput outputBinding = opBinding.getBindingOutput();
+        if(outputBinding !=null) {
+            MIMEContent outputContent = WsdlUtils.getMimeContent(outputBinding.getExtensibilityElements());
+            // set Accept header if output content type is set
+            if (outputContent != null) {
+                request.addHeader("Accept", outputContent.getType());
+            }
         }
-
     }
 
 
@@ -411,18 +440,18 @@ public class HttpMethodConverter {
     /**
      * Process the HTTP Response Headers.
      * <p/>
-     * First go through the list of {@linkplain Namespaces.ODE_HTTP_EXTENSION_NS}{@code :header} elements included in the output binding.
+     * First go through the list of {@linkplain //Namespaces.ODE_HTTP_EXTENSION_NS}{@code :header} elements included in the output binding.
      * For each of them, set the header value as the value of the message part.
      * <p/>
      * Then add all HTTP headers as header part in the message. The name of the header would be the part name.
      * <p/>
-     * Finally, insert a header names 'Status-Line'. This header contains an element as returned by {@link HttpHelper#statusLineToElement(String)} .
+     * Finally, insert a header names 'Status-Line'. This header contains an element as returned by {@link //HttpHelper#statusLineToElement(String)} .
      *
      * @param odeMessage
-     * @param method
+     * @param //method
      * @param operationDef
      */
-    public void extractHttpResponseHeaders(org.apache.ode.bpel.iapi.Message odeMessage, HttpMethod method, Operation operationDef) {
+    public void extractHttpResponseHeaders(org.apache.ode.bpel.iapi.Message odeMessage, HttpResponse response, Operation operationDef) throws ProtocolException {
         Message messageDef = operationDef.getOutput().getMessage();
 
         BindingOutput outputBinding = binding.getBindingOperation(operationDef.getName(), operationDef.getInput().getName(), operationDef.getOutput().getName()).getBindingOutput();
@@ -437,7 +466,7 @@ public class HttpMethodConverter {
 
             Part part = messageDef.getPart(partName);
             if (StringUtils.isNotEmpty(partName)) {
-                Header responseHeader = method.getResponseHeader(headerName);
+                Header responseHeader = response.getHeader(headerName);
                 // if the response header is not set, just skip it. no need to fail. 
                 if (responseHeader != null) {
                     odeMessage.setPart(partName, createPartElement(part, responseHeader.getValue()));
@@ -451,33 +480,41 @@ public class HttpMethodConverter {
 
         // add all HTTP response headers (in their condensed form) into the message as header parts
         Set<String> headerNames = new HashSet<String>();
-        for (Header header : method.getResponseHeaders()) headerNames.add(header.getName());
-        for(String hname:headerNames) odeMessage.setHeaderPart(hname, method.getResponseHeader(hname).getValue());
+        if(response!= null) {
+            for (Header header : response.getHeaders())
+                headerNames.add(header.getName());
+            for (String hname : headerNames)
+                odeMessage.setHeaderPart(hname, response.getHeader(hname).getValue());
 
-        // make the status line information available as a single element
-        odeMessage.setHeaderPart("Status-Line", HttpHelper.statusLineToElement(method.getStatusLine()));
+            // make the status line information available as a single element
+            odeMessage.setHeaderPart("Status-Line", HttpHelper.statusLineToElement(
+                    new StatusLine(response.getVersion(), response.getCode(), response.getReasonPhrase())));
+        }
     }
 
-    public void parseHttpResponse(org.apache.ode.bpel.iapi.Message odeResponse, HttpMethod method, Operation opDef) throws SAXException, IOException {
+    public void parseHttpResponse(org.apache.ode.bpel.iapi.Message odeResponse, HttpResponse response, Operation opDef) throws SAXException, IOException, ProtocolException {
         BindingOperation opBinding = binding.getBindingOperation(opDef.getName(), opDef.getInput().getName(), opDef.getOutput().getName());
         /* process headers */
-        extractHttpResponseHeaders(odeResponse, method, opDef);
+        extractHttpResponseHeaders(odeResponse, response, opDef);
 
         /* process the body if any */
 
         // assumption is made that a response may have at most one body. HttpBindingValidator checks this.
         MIMEContent outputContent = WsdlUtils.getMimeContent(opBinding.getBindingOutput().getExtensibilityElements());
-        int status = method.getStatusCode();
+        int status = response.getCode();
 
         boolean xmlExpected = outputContent != null && HttpUtils.isXml(outputContent.getType());
         // '202/Accepted' and '204/No Content' status codes explicitly state that there is no body, so we should not fail even if a part is bound to the body response
         boolean isBodyExpected = outputContent != null;
         boolean isBodyMandatory = isBodyExpected && bodyAllowed(status) && status != _202_ACCEPTED;
-        final String body;
-        try {
-            body = method.getResponseBodyAsString();
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to get the request body : " + e.getMessage());
+        String body = null;
+        if(response instanceof HttpEntityContainer) {
+            HttpEntityContainer entityContainer = (HttpEntityContainer) response;
+            if(entityContainer.getEntity() != null && entityContainer.getEntity().getContentLength() > 0){
+                body = EntityUtils.toString(entityContainer.getEntity());
+            } else {
+                body ="";
+            }
         }
 
         final boolean emptyBody = StringUtils.isEmpty(body);
@@ -492,7 +529,7 @@ public class HttpMethodConverter {
 
                 if (xmlExpected) {
 
-                    Header h = method.getResponseHeader("Content-Type");
+                    Header h = response.getHeader("Content-Type");
                     String receivedType = h != null ? h.getValue() : null;
                     boolean contentTypeSet = receivedType != null;
                     boolean xmlReceived = contentTypeSet && HttpUtils.isXml(receivedType);
@@ -524,26 +561,28 @@ public class HttpMethodConverter {
         }
     }
 
-    public Object[] parseFault(PartnerRoleMessageExchange odeMex, HttpMethod method) {
+    public Object[] parseFault(PartnerRoleMessageExchange odeMex, HttpResponse response) throws ProtocolException {
         Operation opDef = odeMex.getOperation();
         BindingOperation opBinding = binding.getBindingOperation(opDef.getName(), opDef.getInput().getName(), opDef.getOutput().getName());
-
-        final String body;
-        try {
-            body = method.getResponseBodyAsString();
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to get the request body : " + e.getMessage(), e);
+        String body = null;
+        if(response instanceof HttpEntityContainer) {
+            HttpEntityContainer entityContainer = (HttpEntityContainer) response;
+            try {
+                body = EntityUtils.toString(entityContainer.getEntity());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
-        Header h = method.getResponseHeader("Content-Type");
+        Header h = response.getHeader("Content-Type");
         String receivedType = h != null ? h.getValue() : null;
         if (opDef.getFaults().isEmpty()) {
-            throw new RuntimeException("Operation [" + opDef.getName() + "] has no fault. This " + method.getStatusCode() + " error will be considered as a failure.");
+            throw new RuntimeException("Operation [" + opDef.getName() + "] has no fault. This " + response.getCode() + " error will be considered as a failure.");
         } else if (opBinding.getBindingFaults().isEmpty()) {
-            throw new RuntimeException("No fault binding. This " + method.getStatusCode() + " error will be considered as a failure.");
+            throw new RuntimeException("No fault binding. This " + response.getCode() + " error will be considered as a failure.");
         } else if (StringUtils.isEmpty(body)) {
-            throw new RuntimeException("No body in the response. This " + method.getStatusCode() + " error will be considered as a failure.");
+            throw new RuntimeException("No body in the response. This " + response.getCode() + " error will be considered as a failure.");
         } else if (receivedType != null && !HttpUtils.isXml(receivedType)) {
-            throw new RuntimeException("Response Content-Type [" + receivedType + "] does not describe XML entities. Faults must be XML. This " + method.getStatusCode() + " error will be considered as a failure.");
+            throw new RuntimeException("Response Content-Type [" + receivedType + "] does not describe XML entities. Faults must be XML. This " + response.getCode() + " error will be considered as a failure.");
         } else {
 
             if (receivedType == null) {
@@ -556,7 +595,7 @@ public class HttpMethodConverter {
             try {
                 bodyElement = DOMUtils.stringToDOM(body);
             } catch (Exception e) {
-                throw new RuntimeException("Unable to parse the response body as xml. This " + method.getStatusCode() + " error will be considered as a failure.", e);
+                throw new RuntimeException("Unable to parse the response body as xml. This " + response.getCode() + " error will be considered as a failure.", e);
             }
 
             // Guess which fault it is
@@ -564,10 +603,10 @@ public class HttpMethodConverter {
             Fault faultDef = WsdlUtils.inferFault(opDef, bodyName);
 
             if (faultDef == null) {
-                throw new RuntimeException("Unknown Fault Type [" + bodyName + "] This " + method.getStatusCode() + " error will be considered as a failure.");
+                throw new RuntimeException("Unknown Fault Type [" + bodyName + "] This " + response.getCode() + " error will be considered as a failure.");
             } else if (!WsdlUtils.isOdeFault(opBinding.getBindingFault(faultDef.getName()))) {
                 // is this fault bound with ODE extension?
-                throw new RuntimeException("Fault [" + bodyName + "] is not bound with " + new QName(Namespaces.ODE_HTTP_EXTENSION_NS, "fault") + ". This " + method.getStatusCode() + " error will be considered as a failure.");
+                throw new RuntimeException("Fault [" + bodyName + "] is not bound with " + new QName(Namespaces.ODE_HTTP_EXTENSION_NS, "fault") + ". This " + response.getCode() + " error will be considered as a failure.");
             } else {
                 // a fault has only one part
                 Part partDef = (Part) faultDef.getMessage().getParts().values().iterator().next();
@@ -576,15 +615,15 @@ public class HttpMethodConverter {
                 QName faultType = faultDef.getMessage().getQName();
 
                 // create the ODE Message now that we know the fault
-                org.apache.ode.bpel.iapi.Message response = odeMex.createMessage(faultType);
+                org.apache.ode.bpel.iapi.Message msgResponse = odeMex.createMessage(faultType);
 
                 // build the element to be sent back
                 Element partElement = createPartElement(partDef, bodyElement);
-                response.setPart(partDef.getName(), partElement);
+                msgResponse.setPart(partDef.getName(), partElement);
 
                 // extract and set headers
-                extractHttpResponseHeaders(response, method, opDef);
-                return new Object[]{faultName, response};
+                extractHttpResponseHeaders(msgResponse, response, opDef);
+                return new Object[]{faultName, msgResponse};
             }
         }
     }

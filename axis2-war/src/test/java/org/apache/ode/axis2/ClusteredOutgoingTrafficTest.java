@@ -48,6 +48,7 @@ public class ClusteredOutgoingTrafficTest extends Axis2TestBase implements ODECo
     }
 
     public String getODEConfigDir() {
-        return HIB_H2_CONF_DIR;
+        //return HIB_H2_CONF_DIR;
+        return JPA_H2_CONF_DIR;
     }
 }

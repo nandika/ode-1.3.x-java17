@@ -23,24 +23,18 @@ import org.apache.axis2.Constants;
 import org.apache.axis2.addressing.AddressingConstants;
 import org.apache.axis2.util.JavaUtils;
 import org.apache.axis2.client.Options;
-import org.apache.axis2.transport.http.HTTPConstants;
+import org.apache.axis2.kernel.http.HTTPConstants;
 import org.apache.axis2.transport.http.HttpTransportProperties;
 import org.apache.axis2.transport.jms.JMSConstants;
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpVersion;
-import org.apache.commons.httpclient.ProtocolException;
-import org.apache.commons.httpclient.params.DefaultHttpParams;
-import org.apache.commons.httpclient.params.HostParams;
-import org.apache.commons.httpclient.params.HttpClientParams;
-import org.apache.commons.httpclient.params.HttpConnectionParams;
-import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.apache.commons.httpclient.params.HttpParams;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.core5.http.*;
+
+import org.apache.hc.core5.http.message.BasicHeader;
+import org.apache.hc.core5.util.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author <a href="mailto:midon@intalio.com">Alexis Midon</a>
@@ -60,9 +54,9 @@ public class Properties {
     // its default value
     public static final int DEFAULT_MEX_TIMEOUT = 2 * 60 * 1000;
 
-    public static final String PROP_HTTP_CONNECTION_TIMEOUT = HttpConnectionParams.CONNECTION_TIMEOUT;
-    public static final String PROP_HTTP_SOCKET_TIMEOUT = HttpMethodParams.SO_TIMEOUT;
-    public static final String PROP_HTTP_PROTOCOL_VERSION = HttpMethodParams.PROTOCOL_VERSION;
+    public static final String PROP_HTTP_CONNECTION_TIMEOUT = "http.connection.timeout";
+    public static final String PROP_HTTP_SOCKET_TIMEOUT = "http.socket.timeout";
+    public static final String PROP_HTTP_PROTOCOL_VERSION = "http.protocol.version";
     public static final String PROP_HTTP_HEADER_PREFIX = "http.default-headers.";
     public static final String PROP_HTTP_PROXY_PREFIX = "http.proxy.";
     public static final String PROP_HTTP_PROXY_HOST = PROP_HTTP_PROXY_PREFIX + "host";
@@ -81,7 +75,7 @@ public class Properties {
     public static final String PROP_ADDRESS = "address";
 
     // Httpclient specific
-    public static final String PROP_HTTP_MAX_REDIRECTS = HttpClientParams.MAX_REDIRECTS;
+    public static final String PROP_HTTP_MAX_REDIRECTS = "http.protocol.max-redirects";
 
     // Axis2-specific
     public static final String PROP_HTTP_REQUEST_CHUNK = "http.request.chunk";
@@ -93,6 +87,12 @@ public class Properties {
     public static final String PROP_JMS_DESTINATION_TYPE = "jms.destination.type";
     public static final String PROP_SEND_WS_ADDRESSING_HEADERS = "ws-addressing.headers";
 
+    public static final String HTTP_CONTENT_CHARSET = "http.protocol.content-charset";
+    public static final String DEFAULT_HEADERS = "http.default-headers";
+    public static final String CONNECTION_TIMEOUT = "http.connection.timeout";
+    public static final String SO_TIMEOUT = "http.socket.timeout";
+    public static final String PROTOCOL_VERSION = "http.protocol.version";
+    public static final String MAX_REDIRECTS = "http.protocol.max-redirects";
 
     protected static final Logger log = LoggerFactory.getLogger(Properties.class);
 
@@ -106,7 +106,7 @@ public class Properties {
                 if (headers == null) headers = new ArrayList<Header>();
                 // extract the header name
                 String name = k.substring(PROP_HTTP_HEADER_PREFIX.length());
-                headers.add(new Header(name, v));
+                headers.add(new BasicHeader(name, v));
             } else if (k.startsWith(PROP_HTTP_PROXY_PREFIX)) {
                 if (proxy == null) proxy = new HttpTransportProperties.ProxyProperties();
 
@@ -172,8 +172,8 @@ public class Properties {
                 if(log.isWarnEnabled())log.warn("Deprecated property: http.protocol.encoding. Use http.protocol.content-charset");
                 options.setProperty(Constants.Configuration.CHARACTER_SET_ENCODING, properties.get(PROP_HTTP_PROTOCOL_ENCODING));
             }
-            if (properties.containsKey(HttpMethodParams.HTTP_CONTENT_CHARSET)) {
-                options.setProperty(Constants.Configuration.CHARACTER_SET_ENCODING, properties.get(HttpMethodParams.HTTP_CONTENT_CHARSET));
+            if (properties.containsKey(HTTP_CONTENT_CHARSET)) {
+                options.setProperty(Constants.Configuration.CHARACTER_SET_ENCODING, properties.get(HTTP_CONTENT_CHARSET));
             }
             if (properties.containsKey(PROP_HTTP_PROTOCOL_VERSION)) {
                 options.setProperty(HTTPConstants.HTTP_PROTOCOL_VERSION, properties.get(PROP_HTTP_PROTOCOL_VERSION));
@@ -238,12 +238,115 @@ public class Properties {
             return options;
         }
     }
+    public static class HttpClient5 {
 
+        public static class ConfigResult {
+            public RequestConfig.Builder requestConfigBuilder;
+            public List<Header> headers;
+           // public HttpTransportProperties.ProxyProperties proxy;
+
+            public ConfigResult(RequestConfig.Builder builder, List<Header> headers) {
+                this.requestConfigBuilder = builder;
+                this.headers = headers;
+            }
+        }
+
+        public static ConfigResult translate(Map<String, String> properties) {
+            RequestConfig.Builder configBuilder = RequestConfig.custom();
+            List<Header> headers = new ArrayList<>();
+
+            // Set default encoding
+            headers.add(new BasicHeader(HttpHeaders.CONTENT_ENCODING, "UTF-8"));
+
+            // Generic properties
+            for (Map.Entry<String, String> e : properties.entrySet()) {
+                String key = e.getKey();
+                String value = e.getValue();
+
+                switch (key) {
+                    case Properties.PROP_HTTP_CONNECTION_TIMEOUT:
+                        try {
+                            configBuilder.setConnectTimeout(Timeout.ofMilliseconds(Integer.parseInt(value)));
+                        } catch (NumberFormatException ex) {
+                            log.warn("Invalid value for connection timeout: " + value, ex);
+                        }
+                        break;
+
+                    case Properties.PROP_HTTP_SOCKET_TIMEOUT:
+                        try {
+                            configBuilder.setResponseTimeout(Timeout.ofMilliseconds(Integer.parseInt(value)));
+                        } catch (NumberFormatException ex) {
+                            log.warn("Invalid value for socket timeout: " + value, ex);
+                        }
+                        break;
+
+                    case Properties.PROP_HTTP_PROTOCOL_ENCODING:
+                    case HTTP_CONTENT_CHARSET:
+                        headers.add(new BasicHeader(HttpHeaders.CONTENT_ENCODING, value));
+                        break;
+
+                    case Properties.PROP_HTTP_PROTOCOL_VERSION:
+                        try {
+                            ProtocolVersion version = HttpVersion.parse(value);
+                            // HttpClient 5 does not use protocol version directly in config
+                            // You must set it on the HttpRequest if needed
+                            log.warn("Protocol version config ignored in HttpClient 5. Set per request.");
+                        } catch (Exception ex) {
+                            log.warn("Invalid protocol version: " + value, ex);
+                        }
+                        break;
+
+                    case Properties.PROP_HTTP_REQUEST_CHUNK:
+                        // Controlled at the entity/request level
+                        log.warn("Chunked transfer encoding should be set at the HttpEntity/request level in HttpClient 5.");
+                        break;
+
+                    case Properties.PROP_HTTP_REQUEST_GZIP:
+                    case Properties.PROP_HTTP_ACCEPT_GZIP:
+                        log.warn("GZIP compression is not automatically handled. Use GZIP compression manually.");
+                        break;
+
+                    case Properties.PROP_HTTP_MAX_REDIRECTS:
+                        try {
+                            int redirects = Integer.parseInt(value);
+                            configBuilder.setMaxRedirects(redirects);
+                        } catch (NumberFormatException ex) {
+                            log.warn("Invalid max redirects: " + value, ex);
+                        }
+                        break;
+
+                    default:
+                        headers.add(new BasicHeader(key, value));
+                        break;
+                }
+            }
+
+            // Handle proxy and headers (assuming you have a utility like before)
+//            Object[] proxyAndHeaders = getProxyAndHeaders(properties);
+//            HttpTransportProperties.ProxyProperties proxy = (HttpTransportProperties.ProxyProperties) proxyAndHeaders[0];
+//            Collection<?> customHeaders = (Collection<?>) proxyAndHeaders[1];
+//
+//            if (customHeaders != null) {
+//                for (Object obj : customHeaders) {
+//                    if (obj instanceof Header) {
+//                        headers.add((Header) obj);
+//                    }
+//                }
+//            }
+
+            return new ConfigResult(configBuilder, headers);
+        }
+
+    }
 
     public static class HttpClient {
         public static HttpParams translate(Map<String, String> properties) {
-            return translate(properties, new DefaultHttpParams());
+            //return translate(properties, new DefaultHttpParams());
+            HashMap<String, String> map = new HashMap<>();
+            // Populate default http param properties
+            return translate(properties, null);
         }
+
 
         public static HttpParams translate(Map<String, String> properties, HttpParams p) {
             if (log.isDebugEnabled())
@@ -252,7 +355,7 @@ public class Properties {
 
             // First set any default values to make sure they can be overwriten
             // set the default encoding for HttpClient (HttpClient uses ISO-8859-1 by default)
-            p.setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "UTF-8");
+            p.setParameter(HTTP_CONTENT_CHARSET, "UTF-8");
 
             /*then all property pairs so that new properties (with string value)
              are automatically handled (i.e no translation needed) */
@@ -261,12 +364,12 @@ public class Properties {
             }
 
             // initialize the collection of headers
-            p.setParameter(HostParams.DEFAULT_HEADERS, new ArrayList());
+            p.setParameter(DEFAULT_HEADERS, new ArrayList());
 
             if (properties.containsKey(PROP_HTTP_CONNECTION_TIMEOUT)) {
                 final String value = properties.get(PROP_HTTP_CONNECTION_TIMEOUT);
                 try {
-                    p.setParameter(HttpConnectionParams.CONNECTION_TIMEOUT, Integer.valueOf(value));
+                    p.setParameter(CONNECTION_TIMEOUT, Integer.valueOf(value));
                 } catch (NumberFormatException e) {
                     if (log.isWarnEnabled())
                         log.warn("Mal-formatted Property: [" + Properties.PROP_HTTP_CONNECTION_TIMEOUT + "=" + value + "] Property will be skipped.");
@@ -275,7 +378,7 @@ public class Properties {
             if (properties.containsKey(PROP_HTTP_SOCKET_TIMEOUT)) {
                 final String value = properties.get(PROP_HTTP_SOCKET_TIMEOUT);
                 try {
-                    p.setParameter(HttpMethodParams.SO_TIMEOUT, Integer.valueOf(value));
+                    p.setParameter(SO_TIMEOUT, Integer.valueOf(value));
                 } catch (NumberFormatException e) {
                     if (log.isWarnEnabled())
                         log.warn("Mal-formatted Property: [" + Properties.PROP_HTTP_SOCKET_TIMEOUT + "=" + value + "] Property will be skipped.");
@@ -284,17 +387,17 @@ public class Properties {
 
             if (properties.containsKey(PROP_HTTP_PROTOCOL_ENCODING)) {
                 if(log.isWarnEnabled())log.warn("Deprecated property: http.protocol.encoding. Use http.protocol.content-charset");
-                p.setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, properties.get(PROP_HTTP_PROTOCOL_ENCODING));
+                p.setParameter(HTTP_CONTENT_CHARSET, properties.get(PROP_HTTP_PROTOCOL_ENCODING));
             }
             // the next one is redundant because HttpMethodParams.HTTP_CONTENT_CHARSET accepts a string and we use the same property name
             // so the property has already been added.
-            if (properties.containsKey(HttpMethodParams.HTTP_CONTENT_CHARSET)) {
-                p.setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, properties.get(HttpMethodParams.HTTP_CONTENT_CHARSET));
+            if (properties.containsKey(HTTP_CONTENT_CHARSET)) {
+                p.setParameter(HTTP_CONTENT_CHARSET, properties.get(HTTP_CONTENT_CHARSET));
             }
 
             if (properties.containsKey(PROP_HTTP_PROTOCOL_VERSION)) {
                 try {
-                    p.setParameter(HttpMethodParams.PROTOCOL_VERSION, HttpVersion.parse(properties.get(PROP_HTTP_PROTOCOL_VERSION)));
+                    p.setParameter(PROTOCOL_VERSION, HttpVersion.parse(properties.get(PROP_HTTP_PROTOCOL_VERSION)));
                 } catch (ProtocolException e) {
                     if (log.isWarnEnabled())
 
@@ -323,7 +426,7 @@ public class Properties {
             if (properties.containsKey(PROP_HTTP_MAX_REDIRECTS)) {
                 final String value = properties.get(PROP_HTTP_MAX_REDIRECTS);
                 try {
-                    p.setParameter(HttpClientParams.MAX_REDIRECTS, Integer.valueOf(value));
+                    p.setParameter(MAX_REDIRECTS, Integer.valueOf(value));
                 } catch (NumberFormatException e) {
                     if (log.isWarnEnabled())
                         log.warn("Mal-formatted Property: [" + Properties.PROP_HTTP_MAX_REDIRECTS + "=" + value + "] Property will be skipped.");
@@ -334,11 +437,13 @@ public class Properties {
             HttpTransportProperties.ProxyProperties proxy = (HttpTransportProperties.ProxyProperties) o[0];
             Collection headers = (Collection) o[1];
             if (headers != null && !headers.isEmpty())
-                ((Collection) p.getParameter(HostParams.DEFAULT_HEADERS)).addAll(headers);
+                ((Collection) p.getParameter(DEFAULT_HEADERS)).addAll(headers);
             if (proxy != null) p.setParameter(PROP_HTTP_PROXY_PREFIX, proxy);
 
             return new UnmodifiableHttpParams(p);
         }
+
+
 
         static class UnmodifiableHttpParams implements HttpParams {
 
@@ -411,6 +516,194 @@ public class Properties {
             public boolean isParameterTrue(String name) {
                 return p.isParameterTrue(name);
             }
+        }
+        public interface HttpParams {
+
+            /**
+             * Returns the parent collection that this collection will defer to
+             * for a default value if a particular parameter is not explicitly
+             * set in the collection itself
+             *
+             * @return the parent collection to defer to, if a particular parameter
+             * is not explictly set in the collection itself.
+             *
+             * @see #setDefaults(HttpParams)
+             */
+            public HttpParams getDefaults();
+
+            /**
+             * Assigns the parent collection that this collection will defer to
+             * for a default value if a particular parameter is not explicitly
+             * set in the collection itself
+             *
+             * @param params the parent collection to defer to, if a particular
+             * parameter is not explictly set in the collection itself.
+             *
+             * @see #getDefaults()
+             */
+            public void setDefaults(final HttpParams params);
+
+            /**
+             * Returns a parameter value with the given name. If the parameter is
+             * not explicitly defined in this collection, its value will be drawn
+             * from a higer level collection at which this parameter is defined.
+             * If the parameter is not explicitly set anywhere up the hierarchy,
+             * <tt>null</tt> value is returned.
+             *
+             * @param name the parent name.
+             *
+             * @return an object that represents the value of the parameter.
+             *
+             * @see #setParameter(String, Object)
+             */
+            public Object getParameter(final String name);
+
+            /**
+             * Assigns the value to the parameter with the given name
+             *
+             * @param name parameter name
+             * @param value parameter value
+             */
+            public void setParameter(final String name, final Object value);
+
+            /**
+             * Returns a {@link Long} parameter value with the given name.
+             * If the parameter is not explicitly defined in this collection, its
+             * value will be drawn from a higer level collection at which this parameter
+             * is defined. If the parameter is not explicitly set anywhere up the hierarchy,
+             * the default value is returned.
+             *
+             * @param name the parent name.
+             * @param defaultValue the default value.
+             *
+             * @return a {@link Long} that represents the value of the parameter.
+             *
+             * @see #setLongParameter(String, long)
+             */
+            public long getLongParameter(final String name, long defaultValue);
+
+            /**
+             * Assigns a {@link Long} to the parameter with the given name
+             *
+             * @param name parameter name
+             * @param value parameter value
+             */
+            public void setLongParameter(final String name, long value);
+
+            /**
+             * Returns an {@link Integer} parameter value with the given name.
+             * If the parameter is not explicitly defined in this collection, its
+             * value will be drawn from a higer level collection at which this parameter
+             * is defined. If the parameter is not explicitly set anywhere up the hierarchy,
+             * the default value is returned.
+             *
+             * @param name the parent name.
+             * @param defaultValue the default value.
+             *
+             * @return a {@link Integer} that represents the value of the parameter.
+             *
+             * @see #setIntParameter(String, int)
+             */
+            public int getIntParameter(final String name, int defaultValue);
+
+            /**
+             * Assigns an {@link Integer} to the parameter with the given name
+             *
+             * @param name parameter name
+             * @param value parameter value
+             */
+            public void setIntParameter(final String name, int value);
+
+            /**
+             * Returns a {@link Double} parameter value with the given name.
+             * If the parameter is not explicitly defined in this collection, its
+             * value will be drawn from a higer level collection at which this parameter
+             * is defined. If the parameter is not explicitly set anywhere up the hierarchy,
+             * the default value is returned.
+             *
+             * @param name the parent name.
+             * @param defaultValue the default value.
+             *
+             * @return a {@link Double} that represents the value of the parameter.
+             *
+             * @see #setDoubleParameter(String, double)
+             */
+            public double getDoubleParameter(final String name, double defaultValue);
+
+            /**
+             * Assigns a {@link Double} to the parameter with the given name
+             *
+             * @param name parameter name
+             * @param value parameter value
+             */
+            public void setDoubleParameter(final String name, double value);
+
+            /**
+             * Returns a {@link Boolean} parameter value with the given name.
+             * If the parameter is not explicitly defined in this collection, its
+             * value will be drawn from a higer level collection at which this parameter
+             * is defined. If the parameter is not explicitly set anywhere up the hierarchy,
+             * the default value is returned.
+             *
+             * @param name the parent name.
+             * @param defaultValue the default value.
+             *
+             * @return a {@link Boolean} that represents the value of the parameter.
+             *
+             * @see #setBooleanParameter(String, boolean)
+             */
+            public boolean getBooleanParameter(final String name, boolean defaultValue);
+
+            /**
+             * Assigns a {@link Boolean} to the parameter with the given name
+             *
+             * @param name parameter name
+             * @param value parameter value
+             */
+            public void setBooleanParameter(final String name, boolean value);
+
+            /**
+             * Returns <tt>true</tt> if the parameter is set at any level, <tt>false</tt> otherwise.
+             *
+             * @param name parameter name
+             *
+             * @return <tt>true</tt> if the parameter is set at any level, <tt>false</tt>
+             * otherwise.
+             */
+            public boolean isParameterSet(final String name);
+
+            /**
+             * Returns <tt>true</tt> if the parameter is set locally, <tt>false</tt> otherwise.
+             *
+             * @param name parameter name
+             *
+             * @return <tt>true</tt> if the parameter is set locally, <tt>false</tt>
+             * otherwise.
+             */
+            public boolean isParameterSetLocally(final String name);
+
+            /**
+             * Returns <tt>true</tt> if the parameter is set and is <tt>true</tt>, <tt>false</tt>
+             * otherwise.
+             *
+             * @param name parameter name
+             *
+             * @return <tt>true</tt> if the parameter is set and is <tt>true</tt>, <tt>false</tt>
+             * otherwise.
+             */
+            public boolean isParameterTrue(final String name);
+
+            /**
+             * Returns <tt>true</tt> if the parameter is either not set or is <tt>false</tt>,
+             * <tt>false</tt> otherwise.
+             *
+             * @param name parameter name
+             *
+             * @return <tt>true</tt> if the parameter is either not set or is <tt>false</tt>,
+             * <tt>false</tt> otherwise.
+             */
+            public boolean isParameterFalse(final String name);
+
         }
     }
 }

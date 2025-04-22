@@ -103,6 +103,7 @@ public class CorrelationMultiScopeEarlyMessageTest extends Axis2TestBase impleme
     }
 
     public String getODEConfigDir() {
-        return HIB_H2_CONF_DIR;
+        return JPA_H2_CONF_DIR;
+        //return HIB_H2_CONF_DIR;
     }
 }

@@ -18,13 +18,26 @@
  */
 package org.apache.ode.tools.sendsoap.cline;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpConnectionManager;
-import org.apache.commons.httpclient.SimpleHttpConnectionManager;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
+
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.Credentials;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.protocol.HttpClientContext;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.ParseException;
+import org.apache.hc.core5.http.io.SocketConfig;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.apache.hc.core5.http.message.BasicHeader;
+import org.apache.hc.core5.util.Timeout;
 import org.apache.ode.tools.ToolMessages;
 import org.apache.ode.utils.StreamUtils;
 import org.apache.ode.utils.cli.Argument;
@@ -107,22 +120,51 @@ public class HttpSoapSender extends BaseCommandlineTool {
             m.appendReplacement(sb, now + "-" + c++);
         }
         m.appendTail(sb);
-        SimpleHttpConnectionManager mgr = new SimpleHttpConnectionManager();  
-        mgr.getParams().setConnectionTimeout(60000);
-        mgr.getParams().setSoTimeout(60000);
-        HttpClient httpClient = new HttpClient(mgr);
-        PostMethod httpPostMethod = new PostMethod(u.toExternalForm());
+        //SimpleHttpConnectionManager mgr = new SimpleHttpConnectionManager();
+
+        SocketConfig socketConfig = SocketConfig.custom()
+                .setSoTimeout(Timeout.ofMilliseconds(60000))
+                .build();
+        PoolingHttpClientConnectionManager mgr = new PoolingHttpClientConnectionManager();
+        mgr.setDefaultSocketConfig(socketConfig);
+
+
+        HttpClientContext context = HttpClientContext.create();
+        HttpHost proxy = null;
         if (proxyServer != null && proxyServer.length() > 0) {
-            httpClient.getState().setCredentials(new AuthScope(proxyServer, proxyPort),
-                    new UsernamePasswordCredentials(username, password));
-            httpPostMethod.setDoAuthentication(true);
+             proxy = new HttpHost(proxyServer, proxyPort);
+            BasicCredentialsProvider credsProvider = new BasicCredentialsProvider();
+            AuthScope authScope = new AuthScope(proxyServer, proxyPort);
+            Credentials credentials = new UsernamePasswordCredentials(username, password.toCharArray());
+            credsProvider.setCredentials( authScope, credentials);
+            context.setCredentialsProvider(credsProvider);
+            // httpPostMethod.setDoAuthentication(true);
         }
-        if (soapAction == null) soapAction = "";
-        httpPostMethod.setRequestHeader("SOAPAction", "\"" + soapAction + "\"");
-        httpPostMethod.setRequestHeader("Content-Type", "text/xml");
-        httpPostMethod.setRequestEntity(new StringRequestEntity(sb.toString()));
-        httpClient.executeMethod(httpPostMethod);
-        return httpPostMethod.getResponseBodyAsString() + "\n";
+        RequestConfig   config = RequestConfig.custom()
+                .setConnectionRequestTimeout(Timeout.ofMilliseconds(60000))
+                .setResponseTimeout(Timeout.ofMilliseconds(60000))
+                .setProxy(proxy)
+                .build();
+        try( CloseableHttpClient httpClient = HttpClients.custom()
+                .setConnectionManager(mgr)
+                .setDefaultRequestConfig(config)
+                .build()) {
+
+            HttpPost post = new HttpPost(u.toExternalForm());
+            if (soapAction == null) soapAction = "";
+            post.addHeader(new BasicHeader("SOAPAction", "\"" + soapAction + "\""));
+            post.addHeader(new BasicHeader("Content-Type", "text/xml"));
+            ContentType contentType = ContentType.create("text/xml", "UTF-8");
+            StringEntity entity = new StringEntity(sb.toString(), contentType);
+            post.setEntity(entity);
+            CloseableHttpResponse response = httpClient.execute(post, context);
+            if(response != null && response.getEntity() != null && response.getEntity().getContent() != null) {
+                return EntityUtils.toString(response.getEntity()) + "\n";
+            }
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
     }
 
     public static void main(String[] argv) {

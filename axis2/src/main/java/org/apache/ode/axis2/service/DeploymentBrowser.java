@@ -28,9 +28,9 @@ import org.apache.axis2.description.AxisOperation;
 import org.apache.commons.lang.StringUtils;
 
 import javax.xml.namespace.QName;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletException;
+import  jakarta.servlet.http.HttpServletRequest;
+import  jakarta.servlet.http.HttpServletResponse;
+import  jakarta.servlet.ServletException;
 import java.io.*;
 import java.util.List;
 import java.util.Iterator;

@@ -21,7 +21,7 @@ package org.apache.ode.axis2;
 
 import junit.framework.TestCase;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 import java.io.File;
 
 import org.junit.Test;

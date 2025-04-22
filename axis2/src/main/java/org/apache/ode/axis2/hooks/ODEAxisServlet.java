@@ -19,10 +19,10 @@
 
 package org.apache.ode.axis2.hooks;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.transport.http.AxisServlet;

@@ -30,11 +30,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.apache.axiom.om.OMAbstractFactory;
-import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.OMFactory;
-import org.apache.axiom.om.OMNamespace;
-import org.apache.axiom.om.impl.builder.StAXOMBuilder;
+import org.apache.axiom.om.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.ode.bpel.pmapi.ProcessInfoCustomizer;
@@ -154,11 +150,7 @@ public class DynamicService<T> {
     @SuppressWarnings("unchecked")
     private static OMElement convertToOM(Object obj) {
         if (obj instanceof XmlObject) {
-            try {
-                return new StAXOMBuilder(((XmlObject)obj).newInputStream()).getDocumentElement();
-            } catch (XMLStreamException e) {
-                throw new RuntimeException("Couldn't serialize result to an outgoing messages.", e);
-            }
+            return OMXMLBuilderFactory.createOMBuilder(((XmlObject) obj).newInputStream()).getDocumentElement();
         } else if (obj instanceof List) {
             OMElement listElmt = OM.createOMElement("list", null);
             for (Object stuff : ((List) obj)) {

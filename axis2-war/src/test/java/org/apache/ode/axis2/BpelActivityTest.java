@@ -73,6 +73,7 @@ public class BpelActivityTest extends Axis2TestBase implements ODEConfigDirAware
     }
 
     public String getODEConfigDir() {
-        return HIB_H2_CONF_DIR;
+        return JPA_H2_CONF_DIR;
+        //return HIB_H2_CONF_DIR;
     }
 }

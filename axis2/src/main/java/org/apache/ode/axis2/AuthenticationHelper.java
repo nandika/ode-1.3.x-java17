@@ -20,8 +20,8 @@
 package org.apache.ode.axis2;
 
 import org.apache.axis2.client.Options;
-import org.apache.axis2.transport.http.HTTPConstants;
-import org.apache.axis2.transport.http.impl.httpclient3.HttpTransportPropertiesImpl;
+import org.apache.axis2.kernel.http.HTTPConstants;
+import org.apache.axis2.transport.http.impl.httpclient5.HttpTransportPropertiesImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.ode.bpel.iapi.PartnerRoleMessageExchange;

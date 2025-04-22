@@ -94,13 +94,10 @@
           <groupId>commons-collections</groupId>
           <artifactId>commons-collections</artifactId>
         </dependency>
+
         <dependency>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </dependency>
-        <dependency>
-          <groupId>commons-httpclient</groupId>
-          <artifactId>commons-httpclient</artifactId>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
         </dependency>
         <dependency>
           <groupId>commons-lang</groupId>

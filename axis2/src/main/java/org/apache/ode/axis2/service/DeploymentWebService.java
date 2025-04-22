@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import javax.activation.DataHandler;
+import jakarta.activation.DataHandler;
 import javax.wsdl.Definition;
 import javax.wsdl.WSDLException;
 import javax.wsdl.factory.WSDLFactory;
@@ -44,6 +44,7 @@ import org.apache.axiom.om.OMNamespace;
 import org.apache.axiom.om.OMText;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
+import org.apache.axiom.util.activation.DataHandlerUtils;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.description.AxisService;
@@ -168,8 +169,9 @@ public class DeploymentWebService {
 
                         File dest = new File(_deployPath, bundleName + "-" + _store.getCurrentVersion());
                         dest.mkdir();
-                        unzip(dest, (DataHandler) binaryNode.getDataHandler());
-
+                        DataHandler dataHandler= DataHandlerUtils.getDataHandler(binaryNode.getBlob());
+                        //unzip(dest, (DataHandler) binaryNode.getDataHandler());
+                        unzip(dest, dataHandler);
                         // Check that we have a deploy.xml
                         File deployXml = new File(dest, "deploy.xml");
                         if (!deployXml.exists())

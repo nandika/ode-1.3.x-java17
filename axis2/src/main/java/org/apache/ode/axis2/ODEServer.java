@@ -28,12 +28,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.*;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletException;
+
 import javax.sql.DataSource;
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
@@ -52,6 +51,10 @@ import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.httpclient.util.IdleConnectionTimeoutThread;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.core5.util.TimeValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.ode.axis2.deploy.DeploymentPoller;
@@ -128,7 +131,9 @@ public class ODEServer {
     
     protected ClusterUrlTransformer _clusterUrlTransformer;
 
-    protected MultiThreadedHttpConnectionManager httpConnectionManager;
+//    protected MultiThreadedHttpConnectionManager httpConnectionManager;
+    protected PoolingHttpClientConnectionManager httpConnectionManager;
+
     protected IdleConnectionTimeoutThread idleConnectionTimeoutThread;
 
     public Runnable txMgrCreatedCallback;
@@ -372,7 +377,7 @@ public class ODEServer {
             if(httpConnectionManager!=null){
                 __log.debug("shutting down HTTP connection manager.");
                 try {
-                    httpConnectionManager.shutdown();
+                    httpConnectionManager.close();
                     httpConnectionManager = null;
                 } catch(Throwable t) {
                     __log.error("Unable to shut down HTTP connection manager.", t);
@@ -546,38 +551,63 @@ public class ODEServer {
     }
 
     private void initHttpConnectionManager() throws ServletException {
-        httpConnectionManager = new MultiThreadedHttpConnectionManager();
+        httpConnectionManager = new PoolingHttpClientConnectionManager();
         // settings may be overridden from ode-axis2.properties using the same properties as HttpClient
         // /!\ If the size of the conn pool is smaller than the size of the thread pool, the thread pool might get starved.
-        int max_per_host = Integer.parseInt(_odeConfig.getProperty(HttpConnectionManagerParams.MAX_HOST_CONNECTIONS, ""+_odeConfig.getPoolMaxSize()));
+        int max_per_route = Integer.parseInt(_odeConfig.getProperty(HttpConnectionManagerParams.MAX_HOST_CONNECTIONS, ""+_odeConfig.getPoolMaxSize()));
         int max_total = Integer.parseInt(_odeConfig.getProperty(HttpConnectionManagerParams.MAX_TOTAL_CONNECTIONS, ""+_odeConfig.getPoolMaxSize()));
         if(__log.isDebugEnabled()) {
-            __log.debug(HttpConnectionManagerParams.MAX_HOST_CONNECTIONS+"="+max_per_host);
+            __log.debug(HttpConnectionManagerParams.MAX_HOST_CONNECTIONS+"="+max_per_route);
             __log.debug(HttpConnectionManagerParams.MAX_TOTAL_CONNECTIONS+"="+max_total);
         }
-        if(max_per_host<1 || max_total <1){
+        if(max_per_route<1 || max_total <1){
             String errmsg = HttpConnectionManagerParams.MAX_HOST_CONNECTIONS+" and "+ HttpConnectionManagerParams.MAX_TOTAL_CONNECTIONS+" must be positive integers!";
             __log.error(errmsg);
             throw new ServletException(errmsg);
         }
-        httpConnectionManager.getParams().setDefaultMaxConnectionsPerHost(max_per_host);
-        httpConnectionManager.getParams().setMaxTotalConnections(max_total);
+        httpConnectionManager.setMaxTotal(max_total);
+        httpConnectionManager.setDefaultMaxPerRoute(max_per_route);
 
-        // Register the connection manager to a idle check thread
-        idleConnectionTimeoutThread = new IdleConnectionTimeoutThread();
-        idleConnectionTimeoutThread.setName("Http_Idle_Connection_Timeout_Thread");
-        long idleConnectionTimeout = Long.parseLong(_odeConfig.getProperty("http.idle.connection.timeout", "30000"));
-        long idleConnectionCheckInterval = Long.parseLong(_odeConfig.getProperty("http.idle.connection.check.interval", "30000"));
-
-        if(__log.isDebugEnabled()){
-            __log.debug("http.idle.connection.timeout="+idleConnectionTimeout);
-            __log.debug("http.idle.connection.check.interval="+idleConnectionCheckInterval);
+//        // Register the connection manager to a idle check thread
+//        idleConnectionTimeoutThread = new IdleConnectionTimeoutThread();
+//        idleConnectionTimeoutThread.setName("Http_Idle_Connection_Timeout_Thread");
+        long idleConnectionTimeoutMs = Long.parseLong(_odeConfig.getProperty("http.idle.connection.timeout", "30000"));
+        long idleConnectionCheckIntervalMs = Long.parseLong(_odeConfig.getProperty("http.idle.connection.check.interval", "30000"));
+//
+//        if(__log.isDebugEnabled()){
+//            __log.debug("http.idle.connection.timeout="+idleConnectionTimeout);
+//            __log.debug("http.idle.connection.check.interval="+idleConnectionCheckInterval);
+//        }
+//        idleConnectionTimeoutThread.setConnectionTimeout(idleConnectionTimeout);
+//        idleConnectionTimeoutThread.setTimeoutInterval(idleConnectionCheckInterval);
+//
+//        idleConnectionTimeoutThread.addConnectionManager(httpConnectionManager);
+//        idleConnectionTimeoutThread.start();
+        // Create a CloseableHttpClient with eviction strategy
+        if (__log.isDebugEnabled()) {
+            __log.debug("http.idle.connection.timeout=" + idleConnectionTimeoutMs);
+            __log.debug("http.idle.connection.check.interval=" + idleConnectionCheckIntervalMs);
         }
-        idleConnectionTimeoutThread.setConnectionTimeout(idleConnectionTimeout);
-        idleConnectionTimeoutThread.setTimeoutInterval(idleConnectionCheckInterval);
 
-        idleConnectionTimeoutThread.addConnectionManager(httpConnectionManager);
-        idleConnectionTimeoutThread.start();
+// Create a CloseableHttpClient with eviction strategy
+//        CloseableHttpClient httpClient = HttpClients.custom()
+//                .setConnectionManager(httpConnectionManager)
+//                .evictIdleConnections(TimeValue.ofMilliseconds(idleConnectionTimeoutMs))
+//                .evictExpiredConnections()
+//                .build();
+        httpConnectionManager.setValidateAfterInactivity(TimeValue.ofMilliseconds(idleConnectionTimeoutMs));
+// Optionally, you can run a background thread for connection eviction if desired (though evictIdleConnections handles it internally)
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(r -> {
+            Thread t = new Thread(r, "Http_Idle_Connection_Timeout_Thread");
+            t.setDaemon(true);
+            return t;
+        });
+        scheduler.scheduleAtFixedRate(() -> {
+            httpConnectionManager.closeIdle(TimeValue.ofMilliseconds(idleConnectionTimeoutMs));
+            httpConnectionManager.closeExpired();
+        }, idleConnectionCheckIntervalMs, idleConnectionCheckIntervalMs, TimeUnit.MILLISECONDS);
+
+
     }
 
     public ProcessStoreImpl getProcessStore() {
