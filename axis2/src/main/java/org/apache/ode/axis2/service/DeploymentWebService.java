@@ -169,7 +169,7 @@ public class DeploymentWebService {
 
                         File dest = new File(_deployPath, bundleName + "-" + _store.getCurrentVersion());
                         dest.mkdir();
-                        DataHandler dataHandler= DataHandlerUtils.getDataHandler(binaryNode.getBlob());
+                        DataHandler dataHandler = DataHandlerUtils.toDataHandler(binaryNode.getBlob());
                         //unzip(dest, (DataHandler) binaryNode.getDataHandler());
                         unzip(dest, dataHandler);
                         // Check that we have a deploy.xml
