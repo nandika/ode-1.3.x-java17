@@ -60,7 +60,7 @@ public class HttpHelper {
 
 
 
-    public static void configure(HttpExternalService.HttpClientConfig clientConfig, ClassicHttpRequest request, Element authPart, Map<String, String> endpointProperties) throws URISyntaxException {
+    public static void configure(HttpExternalService.HttpClientConfig clientConfig, ClassicHttpRequest request, Element authPart, Properties.HttpClient5.ConfigResult configResult) throws URISyntaxException {
         if (log.isDebugEnabled()) log.debug("Configuring http client...");
 
         /* Do not forget to wire params so that endpoint properties are passed around
@@ -77,15 +77,8 @@ public class HttpHelper {
         // Actually HttpClient *appends* default headers while we want them to be ignored if the process assign them 
         //client.getParams().setParameter(HostParams.DEFAULT_HEADERS, Collections.EMPTY_LIST);
 
-        // proxy configuration
-        Object[] o = Properties.getProxyAndHeaders(endpointProperties);
-        HttpTransportProperties.ProxyProperties proxy = (HttpTransportProperties.ProxyProperties) o[0];
-        Collection headers = (Collection) o[1];
-        if (headers != null && !headers.isEmpty()) {
-            for (Object header : headers) {
-                request.addHeader((Header) header);
-            }
-        }
+         HttpTransportProperties.ProxyProperties proxy = configResult.proxy;
+
 
         if (ProxyConf.isProxyEnabled((null != proxy), request.getUri().getHost())) {
             if (log.isDebugEnabled()) log.debug("ProxyConf");

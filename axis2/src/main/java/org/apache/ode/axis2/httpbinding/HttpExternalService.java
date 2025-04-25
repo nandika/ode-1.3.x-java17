@@ -29,8 +29,8 @@ import org.apache.hc.client5.http.io.HttpClientConnectionManager;
 import org.apache.hc.client5.http.protocol.HttpClientContext;
 import org.apache.hc.core5.http.*;
 import org.apache.hc.core5.http.ProtocolException;
-import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.message.StatusLine;
+import org.apache.hc.core5.util.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.ode.axis2.ExternalService;
@@ -62,6 +62,7 @@ import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -139,7 +140,7 @@ public class HttpExternalService implements ExternalService {
         }
 
         httpMethodConverter = new HttpMethodConverter(definition, serviceName, portName);
-        //connections = connManager;
+        connections = connManager;
     }
 
     public String getPortName() {
@@ -151,12 +152,12 @@ public class HttpExternalService implements ExternalService {
     }
 
     public void close() {
-//        try {
-//            //connections.close();
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//        //connections = null;
+        try {
+            httpClient.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        httpClient = null;
     }
 
     public EndpointReference getInitialEndpointReference() {
@@ -169,7 +170,7 @@ public class HttpExternalService implements ExternalService {
             // note: don't make this map an instance attribute, so we always get the latest version
             final Map<String, String> properties = pconf.getEndpointProperties(endpointReference);
             // Handle this logic using the properties map and at the request building
-            //final Properties.HttpClient.HttpParams params = Properties.HttpClient.translate(properties);
+            final Properties.HttpClient5.ConfigResult configResult = Properties.HttpClient5.translate(properties);
 
             // base baseUrl
             String mexEndpointUrl = ((MutableEndpoint) odeMex.getEndpointReference()).getUrl();
@@ -178,9 +179,9 @@ public class HttpExternalService implements ExternalService {
             // The order of precedence is (in descending order): process, property, wsdl.
 
             if(endpointUrl.equals(new URL(mexEndpointUrl))){
-                //String address = (String) params.getParameter(Properties.PROP_ADDRESS);
+                String address = (String) configResult.getParams().get(Properties.PROP_ADDRESS);
                 // directly pull from the properties hashmap instead of the params
-                String address =  properties.get(Properties.PROP_ADDRESS);
+                //String address =  properties.get(Properties.PROP_ADDRESS);
                 if(address!=null) {
                     if (log.isDebugEnabled()) log.debug("Endpoint URL overridden by property files. "+mexEndpointUrl+" => "+address);
                     baseUrl = address;
@@ -192,30 +193,30 @@ public class HttpExternalService implements ExternalService {
             baseUrl = clusterUrlTransformer.rewriteOutgoingClusterURL(baseUrl);
             
             // build the request, handle the translate method related logic here
-            final HttpUriRequestBase request = httpMethodConverter.createHttpRequest(odeMex, properties, baseUrl);
+            final HttpUriRequestBase request = httpMethodConverter.createHttpRequest(odeMex, configResult, baseUrl);
             // create a client
-            Properties.HttpClient5.ConfigResult configResult = Properties.HttpClient5.translate(properties);
-            for(Header header : configResult.headers){
-                request.addHeader(header);
-            }
-
             HttpClientConfig clientConfig = new HttpClientConfig();
 
             // configure the client (proxy, security, etc)
             Element message = odeMex.getRequest().getMessage();
             Element authenticatePart = message == null ? null : DOMUtils.findChildByName(message, new QName(null, "WWW-Authenticate"));
-            HttpHelper.configure(clientConfig, request, authenticatePart, properties);
+            HttpHelper.configure(clientConfig, request, authenticatePart, configResult);
 
-            RequestConfig requestConfig = configResult.requestConfigBuilder.setProxy(clientConfig.getProxy()).build();
+            RequestConfig requestConfig = configResult.requestConfigBuilder.
+                    setProxy(clientConfig.getProxy()).
+                    setConnectionRequestTimeout(Timeout.ofMilliseconds(10000)).
+                    setResponseTimeout(Timeout.ofMilliseconds(30000)).build();
             request.setConfig(requestConfig);
             HttpClientContext context = clientConfig.getContext();
             context.setRequestConfig(requestConfig);
+            context.setCredentialsProvider(clientConfig.getCredentialsProvider());
 
             //if client is null, create client
+            Collection<Header> headers = ((Collection) configResult.getParams().get(Properties.DEFAULT_HEADERS));
             if (httpClient == null) {
                 httpClient = HttpClients.custom()
                         .setConnectionManager(connections)
-                        .setDefaultHeaders(configResult.headers)
+                        .setDefaultHeaders(headers)
                         .build();
             }
 
@@ -331,7 +332,7 @@ public class HttpExternalService implements ExternalService {
             } finally {
                 if(httpResponse != null) {
                     ((CloseableHttpResponse) httpResponse).close();
-                }
+               }
             }
             return null;
         }
@@ -351,7 +352,8 @@ public class HttpExternalService implements ExternalService {
                 log.error(errmsg, e);
             } finally {
                 try {
-                    ((CloseableHttpResponse) httpResponse).close();
+                    if(httpResponse != null)
+                        ((CloseableHttpResponse) httpResponse).close();
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -390,7 +392,8 @@ public class HttpExternalService implements ExternalService {
                 log.error(errmsg, transactionException);
             } finally {
                 try {
-                    ((CloseableHttpResponse) httpResponse).close();
+                    if(httpResponse != null)
+                        ((CloseableHttpResponse) httpResponse).close();
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }

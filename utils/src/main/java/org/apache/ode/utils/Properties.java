@@ -26,6 +26,7 @@ import org.apache.axis2.client.Options;
 import org.apache.axis2.kernel.http.HTTPConstants;
 import org.apache.axis2.transport.http.HttpTransportProperties;
 import org.apache.axis2.transport.jms.JMSConstants;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.core5.http.*;
 
@@ -242,101 +243,115 @@ public class Properties {
 
         public static class ConfigResult {
             public RequestConfig.Builder requestConfigBuilder;
-            public List<Header> headers;
-           // public HttpTransportProperties.ProxyProperties proxy;
+            public Map<String, Object> params;
+            public HttpTransportProperties.ProxyProperties proxy;
 
-            public ConfigResult(RequestConfig.Builder builder, List<Header> headers) {
-                this.requestConfigBuilder = builder;
-                this.headers = headers;
+            public ConfigResult() {
+                this.requestConfigBuilder = RequestConfig.custom();
+                this.params = new HashMap<>();
+                this.proxy = null;
+
+            }
+            public Map<String, Object> getParams() {
+                return params;
             }
         }
 
         public static ConfigResult translate(Map<String, String> properties) {
-            RequestConfig.Builder configBuilder = RequestConfig.custom();
-            List<Header> headers = new ArrayList<>();
+            ConfigResult configResult = new ConfigResult();
+            if (log.isDebugEnabled())
+                log.debug("Translating Properties for HttpClient. Properties size=" + properties.size());
 
-            // Set default encoding
-            headers.add(new BasicHeader(HttpHeaders.CONTENT_ENCODING, "UTF-8"));
+            // First set any default values to make sure they can be overwritten
+            // set the default encoding for HttpClient (HttpClient uses ISO-8859-1 by default)
+            configResult.params.put(HTTP_CONTENT_CHARSET, "UTF-8");
 
-            // Generic properties
+             /*then all property pairs so that new properties (with string value)
+             are automatically handled (i.e no translation needed) */
             for (Map.Entry<String, String> e : properties.entrySet()) {
-                String key = e.getKey();
-                String value = e.getValue();
+                configResult.getParams().put(e.getKey(), e.getValue());
+            }
+            configResult.getParams().put(DEFAULT_HEADERS, new ArrayList());
 
-                switch (key) {
-                    case Properties.PROP_HTTP_CONNECTION_TIMEOUT:
-                        try {
-                            configBuilder.setConnectTimeout(Timeout.ofMilliseconds(Integer.parseInt(value)));
-                        } catch (NumberFormatException ex) {
-                            log.warn("Invalid value for connection timeout: " + value, ex);
-                        }
-                        break;
-
-                    case Properties.PROP_HTTP_SOCKET_TIMEOUT:
-                        try {
-                            configBuilder.setResponseTimeout(Timeout.ofMilliseconds(Integer.parseInt(value)));
-                        } catch (NumberFormatException ex) {
-                            log.warn("Invalid value for socket timeout: " + value, ex);
-                        }
-                        break;
-
-                    case Properties.PROP_HTTP_PROTOCOL_ENCODING:
-                    case HTTP_CONTENT_CHARSET:
-                        headers.add(new BasicHeader(HttpHeaders.CONTENT_ENCODING, value));
-                        break;
-
-                    case Properties.PROP_HTTP_PROTOCOL_VERSION:
-                        try {
-                            ProtocolVersion version = HttpVersion.parse(value);
-                            // HttpClient 5 does not use protocol version directly in config
-                            // You must set it on the HttpRequest if needed
-                            log.warn("Protocol version config ignored in HttpClient 5. Set per request.");
-                        } catch (Exception ex) {
-                            log.warn("Invalid protocol version: " + value, ex);
-                        }
-                        break;
-
-                    case Properties.PROP_HTTP_REQUEST_CHUNK:
-                        // Controlled at the entity/request level
-                        log.warn("Chunked transfer encoding should be set at the HttpEntity/request level in HttpClient 5.");
-                        break;
-
-                    case Properties.PROP_HTTP_REQUEST_GZIP:
-                    case Properties.PROP_HTTP_ACCEPT_GZIP:
-                        log.warn("GZIP compression is not automatically handled. Use GZIP compression manually.");
-                        break;
-
-                    case Properties.PROP_HTTP_MAX_REDIRECTS:
-                        try {
-                            int redirects = Integer.parseInt(value);
-                            configBuilder.setMaxRedirects(redirects);
-                        } catch (NumberFormatException ex) {
-                            log.warn("Invalid max redirects: " + value, ex);
-                        }
-                        break;
-
-                    default:
-                        headers.add(new BasicHeader(key, value));
-                        break;
+            if (properties.containsKey(PROP_HTTP_CONNECTION_TIMEOUT)) {
+                final String value = properties.get(PROP_HTTP_CONNECTION_TIMEOUT);
+                try {
+                    configResult.getParams().put(CONNECTION_TIMEOUT, Integer.valueOf(value));
+                    configResult.requestConfigBuilder.setConnectTimeout(Timeout.ofMilliseconds(Integer.parseInt(value)));
+                } catch (NumberFormatException e) {
+                    if (log.isWarnEnabled())
+                        log.warn("Mal-formatted Property: [" + Properties.PROP_HTTP_CONNECTION_TIMEOUT + "=" + value + "] Property will be skipped.");
+                }
+            }
+            if (properties.containsKey(PROP_HTTP_SOCKET_TIMEOUT)) {
+                final String value = properties.get(PROP_HTTP_SOCKET_TIMEOUT);
+                try {
+                    configResult.getParams().put(SO_TIMEOUT, Integer.valueOf(value));
+                    configResult.requestConfigBuilder.setResponseTimeout(Timeout.ofMilliseconds(Integer.parseInt(value)));
+                } catch (NumberFormatException e) {
+                    if (log.isWarnEnabled())
+                        log.warn("Mal-formatted Property: [" + Properties.PROP_HTTP_SOCKET_TIMEOUT + "=" + value + "] Property will be skipped.");
                 }
             }
 
-            // Handle proxy and headers (assuming you have a utility like before)
-//            Object[] proxyAndHeaders = getProxyAndHeaders(properties);
-//            HttpTransportProperties.ProxyProperties proxy = (HttpTransportProperties.ProxyProperties) proxyAndHeaders[0];
-//            Collection<?> customHeaders = (Collection<?>) proxyAndHeaders[1];
-//
-//            if (customHeaders != null) {
-//                for (Object obj : customHeaders) {
-//                    if (obj instanceof Header) {
-//                        headers.add((Header) obj);
-//                    }
-//                }
-//            }
+            if (properties.containsKey(PROP_HTTP_PROTOCOL_ENCODING)) {
+                if(log.isWarnEnabled())log.warn("Deprecated property: http.protocol.encoding. Use http.protocol.content-charset");
+                configResult.getParams().put(HTTP_CONTENT_CHARSET, properties.get(PROP_HTTP_PROTOCOL_ENCODING));
+            }
+            // the next one is redundant because HttpMethodParams.HTTP_CONTENT_CHARSET accepts a string and we use the same property name
+            // so the property has already been added.
+            if (properties.containsKey(HTTP_CONTENT_CHARSET)) {
+                configResult.getParams().put(HTTP_CONTENT_CHARSET, properties.get(HTTP_CONTENT_CHARSET));
+            }
 
-            return new ConfigResult(configBuilder, headers);
+            if (properties.containsKey(PROP_HTTP_PROTOCOL_VERSION)) {
+                try {
+                    configResult.getParams().put(PROTOCOL_VERSION, HttpVersion.parse(properties.get(PROP_HTTP_PROTOCOL_VERSION)));
+                } catch (ProtocolException e) {
+                    if (log.isWarnEnabled())
+                        log.warn("Mal-formatted Property: [" + PROP_HTTP_PROTOCOL_VERSION + "]", e);
+                }
+            }
+            if (properties.containsKey(PROP_HTTP_REQUEST_CHUNK)) {
+                // see org.apache.commons.httpclient.methods.EntityEnclosingMethod.setContentChunked()
+                configResult.getParams().put(PROP_HTTP_REQUEST_CHUNK, Boolean.parseBoolean(properties.get(PROP_HTTP_REQUEST_CHUNK)));
+            }
+            if (properties.containsKey(PROP_HTTP_REQUEST_GZIP)) {
+                if (log.isWarnEnabled())
+                    log.warn("Property not supported by HTTP External Services: " + PROP_HTTP_REQUEST_GZIP);
+            }
+
+            if (Boolean.parseBoolean(properties.get(PROP_HTTP_ACCEPT_GZIP))) {
+                // append gzip to the list of accepted encoding
+                // HttpClient does not support compression natively
+                // Additional code would be necessary to handle it.
+                ((Collection) configResult.getParams().get(DEFAULT_HEADERS)).add(new BasicHeader("Accept-Encoding", "gzip"));
+                if (log.isWarnEnabled())
+                    log.warn("Property not supported by HTTP External Services: " + PROP_HTTP_ACCEPT_GZIP);
+            }
+
+            if (properties.containsKey(PROP_HTTP_MAX_REDIRECTS)) {
+                final String value = properties.get(PROP_HTTP_MAX_REDIRECTS);
+                try {
+                    configResult.getParams().put(PROP_HTTP_MAX_REDIRECTS, Integer.valueOf(value));
+                    configResult.requestConfigBuilder.setMaxRedirects(Integer.parseInt(value));
+                } catch (NumberFormatException e) {
+                    if (log.isWarnEnabled())
+                        log.warn("Mal-formatted Property: [" + Properties.PROP_HTTP_MAX_REDIRECTS + "=" + value + "] Property will be skipped.");
+                }
+            }
+
+            Object[] o = getProxyAndHeaders(properties);
+            HttpTransportProperties.ProxyProperties proxy = (HttpTransportProperties.ProxyProperties) o[0];
+            Collection headers = (Collection) o[1];
+            if (headers != null && !headers.isEmpty())
+                ((Collection) configResult.getParams().get(DEFAULT_HEADERS)).addAll(headers);
+            if (proxy != null) {
+                configResult.getParams().put(PROP_HTTP_PROXY_PREFIX, proxy);
+                configResult.proxy = proxy;
+            }
+           return configResult;
         }
-
     }
 
     public static class HttpClient {
