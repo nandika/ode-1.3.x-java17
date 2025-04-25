@@ -69,6 +69,10 @@ prepare_secure_processes_tests (new File(project.build.testOutputDirectory,'Test
 prepare_secure_processes_tests (new File(project.build.testOutputDirectory,'TestRampartPolicy/secured-processes'));
 
 def prepare_secure_processes_tests(test_dir) {
+    if (!test_dir.exists()) {
+        log.info("Skipping secure process test setup — directory does not exist: ${test_dir}")
+        return
+    }
     log.info('preparing the secure process tests in ' + test_dir);
     def p = ~/sample\d+\-service\.xml/;
     test_dir.eachFileMatch(p) { service_file ->
@@ -84,6 +88,10 @@ def prepare_secure_processes_tests(test_dir) {
 }
 
 def prepare_secure_services_tests(test_dir, file_pattern){
+    if (!test_dir.exists()) {
+        log.info("Skipping secure process test setup — directory does not exist: ${test_dir}")
+        return
+    }
     log.info('preparing the secure services tests with pattern '+file_pattern+' in ' + test_dir);
     test_dir.eachFileMatch(file_pattern) { config_file ->
         def  sample_name =  config_file.getName().split("\\.")[0];
