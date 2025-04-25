@@ -270,6 +270,7 @@ public class InstanceManagementTest extends Axis2TestBase implements ODEConfigDi
     }
 
     public String getODEConfigDir() {
-        return HIB_H2_CONF_DIR;
+        return JPA_H2_CONF_DIR;
+        //return HIB_H2_CONF_DIR;
     }
 }
