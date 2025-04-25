@@ -1,7 +1,7 @@
 <Configuration>
     <Appenders>
-        <File name="FILE" fileName="target/test/test.log" append="false">
-            <PatternLayout pattern="%d{ABSOLUTE} %-5p [%c{1}] %m%n"/>
+        <File name="FILE" fileName="target/test/test.log" append="true">
+            <PatternLayout pattern="%d{ABSOLUTE} %t %-5p [%c{1}] %m%n"/>
         </File>
         <Console name="STDOUT" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{ABSOLUTE} %-5p [%c{1}] %m%n"/>
@@ -13,10 +13,20 @@
     </Appenders>
 
     <Loggers>
-        <Logger name="org.apache.ode" level="info" additivity="false">
+        <Logger name="org.apache.ode.axis2" level="info" additivity="false">
             <AppenderRef ref="FILE"/>
         </Logger>
-        <Logger name="org.apache.axis2" level="info" additivity="false">
+        <logger name="org.apache.hc.client5.http.wire" level="info" additivity="false">
+            <AppenderRef ref="FILE"/>
+        </logger>
+        <logger name="org.apache.axis2.transport.http.server" level="info" additivity="false">
+            <AppenderRef ref="FILE"/>
+        </logger>
+        <logger name="org.apache.axis2.transport.http" level="info" additivity="false">
+            <AppenderRef ref="FILE"/>
+        </logger>
+
+        <Logger name="org.apache.axis2.transport" level="info" additivity="false">
             <AppenderRef ref="FILE"/>
         </Logger>
         <Logger name="org.hibernate" level="warn" additivity="false">
