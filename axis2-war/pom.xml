@@ -299,6 +299,16 @@
             </exclusions>
         </dependency>
         <dependency>
+            <groupId>org.apache.axis2</groupId>
+            <artifactId>axis2-jaxws</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpcore</artifactId>
         </dependency>
@@ -898,23 +908,24 @@
                                 <additionalClasspathElement>${project.build.directory}</additionalClasspathElement>
                             </additionalClasspathElements>
                             <excludes>
-                                <exclude>**/management/DeploymentTest.java</exclude>
-                                <exclude>**/management/InstanceManagementTest.java</exclude>
                                 <exclude>**/correlation/*HibTest.java</exclude>
                                 <exclude>**/instancecleanup/*HibTest.java</exclude>
-                                <exclude>**/*EndpointConfigurationTest.java</exclude>
                                 <exclude>**/rampart/basic/*Test.java</exclude>
                                 <exclude>**/rampart/policy/*Test.java</exclude>
-<!--                                <exclude>**/SelectorsTest.java</exclude>-->
-<!--                                <exclude>**/bpel.dao/**</exclude>-->
-<!--                                <exclude>**/dao/**</exclude>-->
                                 <exclude>**/daohib.bpel/**</exclude>
-<!--                                <exclude>**/correlation/CorrelationMultiScopeEarlyMessageTest.java</exclude>-->
-<!--                                <exclude>**/correlation/CorrelationUnicityTest.java</exclude>-->
-<!--                                <exclude>**/ClusteredOutgoingTrafficTest.java</exclude>-->
+<!--                                <exclude>**/*EndpointConfigurationTest.java</exclude>-->
+                                <!--<exclude>**/axis2/BpelActivityTest.java</exclude>-->
+<!--                                <exclude>**/axis2/instancecleanup/CleanFaultTest.java</exclude>-->
+<!--                                <exclude>**/axis2/EndpointTimeoutsTest.java</exclude>-->
+<!--                                <exclude>**/axis2/MessageStructureTest.java</exclude>-->
+<!--                                <exclude>**/axis2/ClusteredOutgoingTrafficTest.java</exclude>-->
+<!--                                <exclude>**/axis2/EndpointConfigurationTest.java</exclude>-->
+<!--                                <exclude>**/axis2/NoInputMessageInvocationTest.java</exclude>-->
+<!--                                <exclude>**/axis2/NoP2PTest.java</exclude> -->
+                                    <exclude>**/axis2/management/InstanceManagementTest.java</exclude>
                             </excludes>
 <!--                            <includes>-->
-<!--                                    <include>**/management/DeploymentTest.java</include>-->
+<!--                                <include>**/axis2/EndpointConfigurationTest.java</include>-->
 <!--                            </includes>-->
                         </configuration>
                     </execution>

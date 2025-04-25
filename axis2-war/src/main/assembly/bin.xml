@@ -113,7 +113,7 @@
                 <include>org.apache.axis2:axis2-jibx</include>
                 <include>org.apache.axis2:axis2-saaj</include>
                 <include>org.apache.axis2:axis2-xmlbeans</include>
-
+                <include>org.apache.axis2:axis2-jaxws</include>
                 <include>org.apache.woden:woden-core</include>
 
                 <include>org.apache.axis2:axis2-transport-base</include>
