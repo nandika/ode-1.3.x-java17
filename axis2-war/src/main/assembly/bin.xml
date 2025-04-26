@@ -105,6 +105,8 @@
                 <include>org.apache.ws.commons.axiom:axiom-api</include>
                 <include>org.apache.ws.commons.axiom:axiom-impl</include>
                 <include>org.apache.ws.commons.axiom:axiom-dom</include>
+                <include>org.apache.ws.commons.axiom:axiom-jakarta-activation</include>
+                <include>org.apache.ws.commons.axiom:axiom-legacy-attachments</include>
 
                 <include>org.apache.axis2:axis2-adb</include>
                 <include>org.apache.axis2:axis2-codegen</include>
@@ -121,7 +123,7 @@
                 <include>org.apache.axis2:axis2-transport-local</include>
                 <include>org.apache.axis2:axis2-transport-tcp</include>
                 <include>org.apache.axis2:axis2-transport-jms</include>
-                <include>org.apache.httpcomponents:httpcore</include>
+                <include>org.apache.httpcomponents.core5:httpcore5</include>
                 <include>annogen:annogen</include>
                 <include>backport-util-concurrent:backport-util-concurrent</include>
                 <include>commons-codec:commons-codec</include>
@@ -137,6 +139,7 @@
                 <include>org.apache.derby:derbytools</include>
                 <include>jaxen:jaxen</include>
                 <include>javax.activation:activation</include>
+                <include>jakarta.activation:jakarta.activation-api</include>
                 <include>org.apache.geronimo.specs:geronimo-ejb_2.1_spec</include>
                 <include>org.apache.geronimo.specs:geronimo-javamail_1.4_spec</include>
                 <include>org.apache.geronimo.specs:geronimo-j2ee-connector_1.6_spec</include>
@@ -148,7 +151,7 @@
                 <include>org.apache.geronimo.components:geronimo-connector</include>
                 <include>org.apache.geronimo.modules:geronimo-kernel</include>
                 <include>org.apache.geronimo.components:geronimo-transaction</include>
-                <include>org.apache.logging.log4j:log4j-web</include>
+                <include>org.apache.logging.log4j:log4j-jakarta-web</include>
                 <include>org.apache.logging.log4j:log4j-slf4j-impl</include>
                 <include>org.apache.logging.log4j:log4j-core</include>
                 <include>org.apache.logging.log4j:log4j-api</include>

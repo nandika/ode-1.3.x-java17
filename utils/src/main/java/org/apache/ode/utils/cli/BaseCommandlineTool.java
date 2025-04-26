@@ -29,6 +29,7 @@ import org.apache.logging.log4j.core.appender.FileAppender;
 import org.apache.logging.log4j.core.config.AppenderRef;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
+import org.apache.logging.log4j.core.layout.LevelPatternSelector;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.apache.ode.utils.Version;
 import org.apache.ode.utils.fs.TempFileManager;
@@ -97,7 +98,7 @@ public abstract class BaseCommandlineTool {
       final LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
       final Configuration config = ctx.getConfiguration();
       LoggerConfig loggerConfig = config.getLoggerConfig(LogManager.ROOT_LOGGER_NAME);
-      Layout layout = PatternLayout.createLayout(LOGGING_PATTERN,config,null,Charset.forName("UTF-8"),true,false,null,null);
+      Layout layout = PatternLayout.createLayout(LOGGING_PATTERN, LevelPatternSelector.newBuilder().build(),config,null,Charset.forName("UTF-8"),true,false,null,null);
       Appender appender = ConsoleAppender.createAppender(layout, null, "SYSTEM_OUT", "stderr appender", "false", "true");
       AppenderRef ref = initialize("stderr appender", level);
       AppenderRef[] refs = new AppenderRef[] {ref};
@@ -114,7 +115,7 @@ public abstract class BaseCommandlineTool {
       final LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
       final Configuration config = ctx.getConfiguration();
       LoggerConfig loggerConfig = config.getLoggerConfig(LogManager.ROOT_LOGGER_NAME);
-      Layout layout = PatternLayout.createLayout(LOGGING_PATTERN,config,null,Charset.forName("UTF-8"),true,false,null,null);
+      Layout layout = PatternLayout.createLayout(LOGGING_PATTERN, LevelPatternSelector.newBuilder().build(),config,null,Charset.forName("UTF-8"),true,false,null,null);
       Appender appender = FileAppender.createAppender(System.getProperty("ode.home") + "/logs/ode.log", "false", "false", "File", "false",
           "true", "true", "8192", layout, null, "false", null, config);
       AppenderRef ref = initialize("File", level);
