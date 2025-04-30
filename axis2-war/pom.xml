@@ -944,11 +944,11 @@
 <!--                                <exclude>**/axis2/EndpointConfigurationTest.java</exclude>-->
 <!--                                <exclude>**/axis2/NoInputMessageInvocationTest.java</exclude>-->
 <!--                                <exclude>**/axis2/NoP2PTest.java</exclude> -->
-                                    <exclude>**/axis2/management/InstanceManagementTest.java</exclude>
+                                <exclude>**/axis2/management/InstanceManagementTest.java</exclude>
                             </excludes>
-                            <includes>
-                                <include>**/axis2/SoapHeaderTest.java</include>
-                            </includes>
+<!--                            <includes>-->
+<!--                                <include>**/axis2/management/InstanceManagementTest.java</include>-->
+<!--                            </includes>-->
                         </configuration>
                     </execution>
                 </executions>
