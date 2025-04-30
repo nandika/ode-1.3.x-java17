@@ -569,8 +569,8 @@ public class ODEServer {
         httpConnectionManager.setDefaultMaxPerRoute(max_per_route);
 
 //        // Register the connection manager to a idle check thread
-//        idleConnectionTimeoutThread = new IdleConnectionTimeoutThread();
-//        idleConnectionTimeoutThread.setName("Http_Idle_Connection_Timeout_Thread");
+        idleConnectionTimeoutThread = new IdleConnectionTimeoutThread();
+        idleConnectionTimeoutThread.setName("Http_Idle_Connection_Timeout_Thread");
         long idleConnectionTimeoutMs = Long.parseLong(_odeConfig.getProperty("http.idle.connection.timeout", "30000"));
         long idleConnectionCheckIntervalMs = Long.parseLong(_odeConfig.getProperty("http.idle.connection.check.interval", "30000"));
 //
@@ -598,9 +598,8 @@ public class ODEServer {
         httpConnectionManager.setValidateAfterInactivity(TimeValue.ofMilliseconds(idleConnectionTimeoutMs));
 // Optionally, you can run a background thread for connection eviction if desired (though evictIdleConnections handles it internally)
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(r -> {
-            Thread t = new Thread(r, "Http_Idle_Connection_Timeout_Thread");
-            t.setDaemon(true);
-            return t;
+            idleConnectionTimeoutThread.setDaemon(true);
+            return idleConnectionTimeoutThread;
         });
         scheduler.scheduleAtFixedRate(() -> {
             httpConnectionManager.closeIdle(TimeValue.ofMilliseconds(idleConnectionTimeoutMs));
