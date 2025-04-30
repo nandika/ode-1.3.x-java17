@@ -28,18 +28,15 @@ import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.io.BasicHttpClientConnectionManager;
 import org.apache.hc.client5.http.protocol.HttpClientContext;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.HttpHost;
-import org.apache.hc.core5.http.HttpRequest;
 import org.apache.hc.core5.http.ParseException;
 import org.apache.hc.core5.http.io.SocketConfig;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.http.message.BasicHeader;
-import org.apache.hc.core5.http.protocol.HttpContext;
-import org.apache.hc.core5.io.Closer;
 import org.apache.hc.core5.util.Timeout;
 import org.apache.ode.tools.ToolMessages;
 import org.apache.ode.utils.StreamUtils;
@@ -59,10 +56,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -130,8 +125,8 @@ public class HttpSoapSender extends BaseCommandlineTool {
                 .setSoTimeout(Timeout.ofMilliseconds(60000))
                 .build();
 
-        PoolingHttpClientConnectionManager mgr = new PoolingHttpClientConnectionManager();
-        mgr.setDefaultSocketConfig(socketConfig);
+        BasicHttpClientConnectionManager mgr = new BasicHttpClientConnectionManager();
+        mgr.setSocketConfig(socketConfig);
 
 
         HttpClientContext context = HttpClientContext.create();
@@ -159,25 +154,18 @@ public class HttpSoapSender extends BaseCommandlineTool {
         StringEntity entity = new StringEntity(sb.toString(), contentType);
         post.setEntity(entity);
 
-        CloseableHttpClient httpClient = HttpClients.custom()
+
+        try(CloseableHttpClient httpClient = HttpClients.custom()
                 .setConnectionManager(mgr)
                 .setDefaultRequestConfig(config)
-                .build();
-        try{
+                .build()) {
             CloseableHttpResponse response = httpClient.execute(post, context);
             if(response != null && response.getEntity() != null && response.getEntity().getContent() != null) {
-                String responseStr = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8) + "\n";
+                String responseStr = EntityUtils.toString(response.getEntity()) + "\n";
                 return responseStr;
             }
         } catch (ParseException e) {
             throw new RuntimeException(e);
-        } finally {
-            try {
-                if (httpClient != null) httpClient.close();
-                if(mgr != null) mgr.close();
-            } catch (IOException e) {
-                // ignore
-            }
         }
         return null;
     }
