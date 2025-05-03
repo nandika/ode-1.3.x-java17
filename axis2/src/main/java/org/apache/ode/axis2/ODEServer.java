@@ -48,9 +48,7 @@ import javax.transaction.xa.XAResource;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.engine.AxisConfiguration;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
-import org.apache.commons.httpclient.util.IdleConnectionTimeoutThread;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
@@ -97,6 +95,10 @@ public class ODEServer {
 
     private static final Messages __msgs = Messages.getMessages(Messages.class);
 
+    // For Backward compatibility using the same constants used in HttpConnectionManagerParams"
+    public static final String MAX_HOST_CONNECTIONS = "http.connection-manager.max-per-host";
+    public static final String MAX_TOTAL_CONNECTIONS = "http.connection-manager.max-total";
+
     protected File _appRoot;
 
     protected File _workRoot;
@@ -134,7 +136,7 @@ public class ODEServer {
 //    protected MultiThreadedHttpConnectionManager httpConnectionManager;
     protected PoolingHttpClientConnectionManager httpConnectionManager;
 
-    protected IdleConnectionTimeoutThread idleConnectionTimeoutThread;
+    //protected IdleConnectionTimeoutThread idleConnectionTimeoutThread;
 
     public Runnable txMgrCreatedCallback;
 
@@ -383,15 +385,15 @@ public class ODEServer {
                     __log.error("Unable to shut down HTTP connection manager.", t);
                 }
             }
-            if(idleConnectionTimeoutThread!=null){
-                __log.debug("shutting down Idle Connection Timeout Thread.");
-                try {
-                    idleConnectionTimeoutThread.shutdown();
-                    idleConnectionTimeoutThread = null;
-                } catch(Throwable t) {
-                    __log.error("Unable to shut down Idle Connection Timeout Thread.", t);
-                }
-            }
+//            if(idleConnectionTimeoutThread!=null){
+//                __log.debug("shutting down Idle Connection Timeout Thread.");
+//                try {
+//                    idleConnectionTimeoutThread.shutdown();
+//                    idleConnectionTimeoutThread = null;
+//                } catch(Throwable t) {
+//                    __log.error("Unable to shut down Idle Connection Timeout Thread.", t);
+//                }
+//            }
             try {
                 __log.debug("cleaning up temporary files.");
                 TempFileManager.cleanup();
@@ -554,8 +556,8 @@ public class ODEServer {
         httpConnectionManager = new PoolingHttpClientConnectionManager();
         // settings may be overridden from ode-axis2.properties using the same properties as HttpClient
         // /!\ If the size of the conn pool is smaller than the size of the thread pool, the thread pool might get starved.
-        int max_per_route = Integer.parseInt(_odeConfig.getProperty(HttpConnectionManagerParams.MAX_HOST_CONNECTIONS, ""+_odeConfig.getPoolMaxSize()));
-        int max_total = Integer.parseInt(_odeConfig.getProperty(HttpConnectionManagerParams.MAX_TOTAL_CONNECTIONS, ""+_odeConfig.getPoolMaxSize()));
+        int max_per_route = Integer.parseInt(_odeConfig.getProperty(MAX_HOST_CONNECTIONS, ""+_odeConfig.getPoolMaxSize()));
+        int max_total = Integer.parseInt(_odeConfig.getProperty(MAX_TOTAL_CONNECTIONS, ""+_odeConfig.getPoolMaxSize()));
         if(__log.isDebugEnabled()) {
             __log.debug(HttpConnectionManagerParams.MAX_HOST_CONNECTIONS+"="+max_per_route);
             __log.debug(HttpConnectionManagerParams.MAX_TOTAL_CONNECTIONS+"="+max_total);
@@ -569,8 +571,9 @@ public class ODEServer {
         httpConnectionManager.setDefaultMaxPerRoute(max_per_route);
 
 //        // Register the connection manager to a idle check thread
-        idleConnectionTimeoutThread = new IdleConnectionTimeoutThread();
-        idleConnectionTimeoutThread.setName("Http_Idle_Connection_Timeout_Thread");
+
+        //idleConnectionTimeoutThread = new IdleConnectionTimeoutThread();
+        //idleConnectionTimeoutThread.setName("Http_Idle_Connection_Timeout_Thread");
         long idleConnectionTimeoutMs = Long.parseLong(_odeConfig.getProperty("http.idle.connection.timeout", "30000"));
         long idleConnectionCheckIntervalMs = Long.parseLong(_odeConfig.getProperty("http.idle.connection.check.interval", "30000"));
 //
@@ -598,8 +601,9 @@ public class ODEServer {
         httpConnectionManager.setValidateAfterInactivity(TimeValue.ofMilliseconds(idleConnectionTimeoutMs));
 // Optionally, you can run a background thread for connection eviction if desired (though evictIdleConnections handles it internally)
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(r -> {
-            idleConnectionTimeoutThread.setDaemon(true);
-            return idleConnectionTimeoutThread;
+            Thread t = new Thread(r, "IdleConnectionTimeoutThread");
+            t.setDaemon(true);
+            return t;
         });
         scheduler.scheduleAtFixedRate(() -> {
             httpConnectionManager.closeIdle(TimeValue.ofMilliseconds(idleConnectionTimeoutMs));
