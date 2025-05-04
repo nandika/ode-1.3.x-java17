@@ -136,6 +136,7 @@ public class ODEServer {
 //    protected MultiThreadedHttpConnectionManager httpConnectionManager;
     protected PoolingHttpClientConnectionManager httpConnectionManager;
 
+    protected ScheduledExecutorService idleConnectionRemovalScheduler;
     //protected IdleConnectionTimeoutThread idleConnectionTimeoutThread;
 
     public Runnable txMgrCreatedCallback;
@@ -385,15 +386,15 @@ public class ODEServer {
                     __log.error("Unable to shut down HTTP connection manager.", t);
                 }
             }
-//            if(idleConnectionTimeoutThread!=null){
-//                __log.debug("shutting down Idle Connection Timeout Thread.");
-//                try {
-//                    idleConnectionTimeoutThread.shutdown();
-//                    idleConnectionTimeoutThread = null;
-//                } catch(Throwable t) {
-//                    __log.error("Unable to shut down Idle Connection Timeout Thread.", t);
-//                }
-//            }
+            if(idleConnectionRemovalScheduler != null){
+                __log.debug("shutting down Idle Connection Removal Scheduler");
+                try {
+                    idleConnectionRemovalScheduler.shutdown();
+                    idleConnectionRemovalScheduler = null;
+                } catch(Throwable t) {
+                    __log.error("Unable to shut down Idle Connection Timeout Thread.", t);
+                }
+            }
             try {
                 __log.debug("cleaning up temporary files.");
                 TempFileManager.cleanup();
@@ -600,12 +601,12 @@ public class ODEServer {
 //                .build();
         httpConnectionManager.setValidateAfterInactivity(TimeValue.ofMilliseconds(idleConnectionTimeoutMs));
 // Optionally, you can run a background thread for connection eviction if desired (though evictIdleConnections handles it internally)
-        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(r -> {
+        idleConnectionRemovalScheduler = Executors.newSingleThreadScheduledExecutor(r -> {
             Thread t = new Thread(r, "IdleConnectionTimeoutThread");
             t.setDaemon(true);
             return t;
         });
-        scheduler.scheduleAtFixedRate(() -> {
+        idleConnectionRemovalScheduler.scheduleAtFixedRate(() -> {
             httpConnectionManager.closeIdle(TimeValue.ofMilliseconds(idleConnectionTimeoutMs));
             httpConnectionManager.closeExpired();
         }, idleConnectionCheckIntervalMs, idleConnectionCheckIntervalMs, TimeUnit.MILLISECONDS);
