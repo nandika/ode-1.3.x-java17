@@ -134,10 +134,10 @@
         <log4j2.version>2.24.3</log4j2.version>
 
         <neethi.version>3.0.3</neethi.version>
-        <openjpa.version>2.4.2</openjpa.version>
+        <openjpa.version>3.2.2</openjpa.version>
         <ode-console.version>0.1.0</ode-console.version>
 
-        <persistence-api.version>2.0</persistence-api.version>
+        <persistence-api.version>2.2</persistence-api.version>
 
         <rampart.version>1.7.1</rampart.version>
 
@@ -737,7 +737,7 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.geronimo.specs</groupId>
-                <artifactId>geronimo-jpa_2.0_spec</artifactId>
+                <artifactId>geronimo-jpa_2.2_spec</artifactId>
                 <version>${geronimo.specs.version}</version>
             </dependency>
             <dependency>
