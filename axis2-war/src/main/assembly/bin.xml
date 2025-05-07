@@ -145,7 +145,7 @@
                 <include>org.apache.geronimo.specs:geronimo-javamail_1.4_spec</include>
                 <include>org.apache.geronimo.specs:geronimo-j2ee-connector_1.6_spec</include>
                 <include>org.apache.geronimo.specs:geronimo-jms_1.1_spec</include>
-                <include>org.apache.geronimo.specs:geronimo-jpa_2.0_spec</include>
+                <include>org.apache.geronimo.specs:geronimo-jpa_2.2_spec</include>
                 <include>org.apache.geronimo.specs:geronimo-jta_1.1_spec</include>
                 <include>org.codehaus.woodstox:stax2-api</include>
                 <include>org.jibx:jibx-run</include>
