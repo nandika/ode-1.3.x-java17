@@ -42,7 +42,7 @@ public class EndpointReferenceContextImpl implements EndpointReferenceContext {
 
   public EndpointReference resolveEndpointReference(Element element) {
     if (__log.isDebugEnabled())
-      __log.debug("Resolving endpoint reference " + DOMUtils.domToString(element));
+      __log.debug("Resolving endpoint reference " , DOMUtils.domToString(element));
     return EndpointFactory.createEndpoint(element);
   }
 

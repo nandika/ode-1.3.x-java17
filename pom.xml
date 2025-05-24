@@ -72,7 +72,7 @@
 
     <properties>
         <ode.version>1.3.9-SNAPSHOT</ode.version>
-        <ant.version>1.6.5</ant.version>
+        <ant.version>1.7.0</ant.version>
         <annogen.version>0.1.0</annogen.version>
         <axiom.version>2.0.0</axiom.version>
         <axis2.version>2.0.1-SNAPSHOT</axis2.version>
@@ -84,11 +84,11 @@
         <commons.codec.version>1.3</commons.codec.version>
         <commons.collections.version>3.2.2</commons.collections.version>
         <commons.dbcp.version>1.4</commons.dbcp.version>
-        <commons.fileupload.version>1.3.3</commons.fileupload.version>
-        <httpclient.version>5.4.2</httpclient.version>
+        <commons.fileupload.version>1.5</commons.fileupload.version>
+        <httpclient.version>5.4.4</httpclient.version>
         <commons.lang.version>2.6</commons.lang.version>
         <commons.logging.version>1.1.1</commons.logging.version>
-        <commons.io.version>2.1</commons.io.version>
+        <commons.io.version>2.19.0</commons.io.version>
         <commons.pool.version>1.6</commons.pool.version>
         <commons.primitives.version>1.0</commons.primitives.version>
         <commons.beanutils.version>1.8.3</commons.beanutils.version>
@@ -182,7 +182,7 @@
         <bouncycastle.version>140</bouncycastle.version>
         <jetty.version>6.1.3</jetty.version>
         <wss4j.version>1.6.16</wss4j.version>
-        <xmlsec.version>1.5.7</xmlsec.version>
+        <xmlsec.version>2.3.4</xmlsec.version>
         <opensaml1.version>1.1</opensaml1.version>
         <opensaml.version>2.5.1-1</opensaml.version>
         <openws.version>1.4.2-1</openws.version>
@@ -192,7 +192,8 @@
         <joda-time.version>2.5</joda-time.version>
         <esapi.version>2.0GA</esapi.version>
         <mime4j-core.version>0.7.2</mime4j-core.version>
-
+        <urlrewritefilter.version>5.1.3</urlrewritefilter.version>
+        <groovy.version>3.0.19</groovy.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -553,11 +554,11 @@
                 <artifactId>annogen</artifactId>
                 <version>${annogen.version}</version>
             </dependency>
-            <dependency>
-                <groupId>antlr</groupId>
-                <artifactId>antlr</artifactId>
-                <version>${antlr.version}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>antlr</groupId>-->
+<!--                <artifactId>antlr</artifactId>-->
+<!--                <version>${antlr.version}</version>-->
+<!--            </dependency>-->
             <dependency>
                 <groupId>org.apache.ws.commons.axiom</groupId>
                 <artifactId>axiom-api</artifactId>
@@ -634,11 +635,11 @@
                 <artifactId>commons-beanutils</artifactId>
                 <version>${commons.beanutils.version}</version>
             </dependency>
-            <dependency>
-                <groupId>commons-logging</groupId>
-                <artifactId>commons-logging</artifactId>
-                <version>${commons.logging.version}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>commons-logging</groupId>-->
+<!--                <artifactId>commons-logging</artifactId>-->
+<!--                <version>${commons.logging.version}</version>-->
+<!--            </dependency>-->
             <dependency>
                 <groupId>commons-dbcp</groupId>
                 <artifactId>commons-dbcp</artifactId>
@@ -711,25 +712,20 @@
                 <scope>provided</scope>
             </dependency>
 <!--            <dependency>-->
-<!--                <groupId>org.apache.httpcomponents</groupId>-->
-<!--                <artifactId>httpcore-nio</artifactId>-->
-<!--                <version>${httpcomponents.version}</version>-->
+<!--                <groupId>javax.xml.bind</groupId>-->
+<!--                <artifactId>jaxb-api</artifactId>-->
+<!--                <version>${jaxb-api.version}</version>-->
 <!--            </dependency>-->
-            <dependency>
-                <groupId>javax.xml.bind</groupId>
-                <artifactId>jaxb-api</artifactId>
-                <version>${jaxb-api.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-impl</artifactId>
-                <version>${jaxb.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-xjc</artifactId>
-                <version>${jaxb.version}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>com.sun.xml.bind</groupId>-->
+<!--                <artifactId>jaxb-impl</artifactId>-->
+<!--                <version>${jaxb.version}</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>com.sun.xml.bind</groupId>-->
+<!--                <artifactId>jaxb-xjc</artifactId>-->
+<!--                <version>${jaxb.version}</version>-->
+<!--            </dependency>-->
             <dependency>
                 <groupId>org.apache.geronimo.specs</groupId>
                 <artifactId>geronimo-jpa_2.2_spec</artifactId>
@@ -745,11 +741,11 @@
                 <artifactId>jaxen</artifactId>
                 <version>${jaxen.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.codehaus.jettison</groupId>
-                <artifactId>jettison</artifactId>
-                <version>${jettison.version}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>org.codehaus.jettison</groupId>-->
+<!--                <artifactId>jettison</artifactId>-->
+<!--                <version>${jettison.version}</version>-->
+<!--            </dependency>-->
             <dependency>
                 <groupId>org.jibx</groupId>
                 <artifactId>jibx-run</artifactId>
@@ -805,11 +801,11 @@
                 <artifactId>stax2-api</artifactId>
                 <version>${stax2.version}</version>
             </dependency>
-            <dependency>
-                <groupId>javax.mail</groupId>
-                <artifactId>mail</artifactId>
-                <version>${javax.mail.version}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>javax.mail</groupId>-->
+<!--                <artifactId>mail</artifactId>-->
+<!--                <version>${javax.mail.version}</version>-->
+<!--            </dependency>-->
             <dependency>
                 <groupId>org.apache.openjpa</groupId>
                 <artifactId>openjpa</artifactId>
@@ -945,22 +941,22 @@
                 <artifactId>xercesImpl</artifactId>
                 <version>${xerces.version}</version>
             </dependency>
-            <dependency>
-                <groupId>xml-resolver</groupId>
-                <artifactId>xml-resolver</artifactId>
-                <version>${xmlresolver.version}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>xml-resolver</groupId>-->
+<!--                <artifactId>xml-resolver</artifactId>-->
+<!--                <version>${xmlresolver.version}</version>-->
+<!--            </dependency>-->
             <dependency>
                 <groupId>org.apache.xmlbeans</groupId>
                 <artifactId>xmlbeans</artifactId>
                 <version>${xmlbeans.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>com.thoughtworks.xstream</groupId>
-                <artifactId>xstream</artifactId>
-                <version>${xstream.version}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>com.thoughtworks.xstream</groupId>-->
+<!--                <artifactId>xstream</artifactId>-->
+<!--                <version>${xstream.version}</version>-->
+<!--            </dependency>-->
             <dependency>
                 <groupId>org.jmock</groupId>
                 <artifactId>jmock</artifactId>
@@ -973,11 +969,11 @@
                 <version>${jmock-junit4}</version>
                 <scope>test</scope>
             </dependency>
-            <dependency>
-                <groupId>org.apache.activemq</groupId>
-                <artifactId>apache-activemq</artifactId>
-                <version>${activemq.version}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>org.apache.activemq</groupId>-->
+<!--                <artifactId>apache-activemq</artifactId>-->
+<!--                <version>${activemq.version}</version>-->
+<!--            </dependency>-->
 
             <dependency>
                 <groupId>org.apache.derby</groupId>
@@ -1011,12 +1007,6 @@
                 <artifactId>axis2-codegen</artifactId>
                 <version>${axis2.version}</version>
             </dependency>
-<!--            <dependency>-->
-<!--                <groupId>org.apache.axis2</groupId>-->
-<!--                <artifactId>axis2-fastinfoset</artifactId>-->
-<!--                <version>${axis2.version}</version>-->
-<!--            </dependency>-->
-
             <dependency>
                 <groupId>org.apache.axis2</groupId>
                 <artifactId>axis2-jaxws</artifactId>
@@ -1027,26 +1017,16 @@
                 <artifactId>axis2-kernel</artifactId>
                 <version>${axis2.version}</version>
             </dependency>
-<!--            <dependency>-->
-<!--                <groupId>org.apache.axis2</groupId>-->
-<!--                <artifactId>axis2-metadata</artifactId>-->
-<!--                <version>${axis2.version}</version>-->
-<!--            </dependency>-->
-<!--            <dependency>-->
-<!--                <groupId>org.apache.axis2</groupId>-->
-<!--                <artifactId>axis2-mtompolicy</artifactId>-->
-<!--                <version>${axis2.version}</version>-->
-<!--            </dependency>-->
             <dependency>
                 <groupId>org.apache.axis2</groupId>
                 <artifactId>axis2-saaj</artifactId>
                 <version>${axis2.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.apache.axis2</groupId>
-                <artifactId>axis2-saaj-api</artifactId>
-                <version>${axis2.version}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>org.apache.axis2</groupId>-->
+<!--                <artifactId>axis2-saaj-api</artifactId>-->
+<!--                <version>${axis2.version}</version>-->
+<!--            </dependency>-->
             <dependency>
                 <groupId>org.apache.axis2</groupId>
                 <artifactId>axis2-java2wsdl</artifactId>
@@ -1247,12 +1227,12 @@
             <dependency>
                 <groupId>org.tuckey</groupId>
                 <artifactId>urlrewritefilter</artifactId>
-                <version>5.1.3</version>
+                <version>${urlrewritefilter.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.groovy</groupId>
                 <artifactId>groovy</artifactId>
-                <version>3.0.19</version>
+                <version>${groovy.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
