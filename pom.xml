@@ -91,7 +91,7 @@
         <commons.io.version>2.19.0</commons.io.version>
         <commons.pool.version>1.6</commons.pool.version>
         <commons.primitives.version>1.0</commons.primitives.version>
-        <commons.beanutils.version>1.8.3</commons.beanutils.version>
+        <commons.beanutils.version>1.10.1</commons.beanutils.version>
         <commons.cli.version>1.2</commons.cli.version>
 
         <derby.version>10.5.3.0_1</derby.version>
@@ -111,8 +111,6 @@
         <geronimo-servlet.version>1.0</geronimo-servlet.version>
         <geronimo-jms.version>1.1.1</geronimo-jms.version>
         <jakrata.activation.version>2.1.3</jakrata.activation.version>
-
-<!--        <httpcomponents.version>5.3.4</httpcomponents.version>-->
         <httpcore5.version>5.3.4</httpcore5.version>
         <hsqldb.version>2.3.3</hsqldb.version>
         <h2.version>1.4.196</h2.version>
@@ -158,15 +156,15 @@
         <woodstox.version>4.2.0</woodstox.version>
         <stax2.version>4.0.0</stax2.version>
         <xmlresolver.version>1.2</xmlresolver.version>
-        <xmlbeans.version>2.3.0</xmlbeans.version>
+        <xmlbeans.version>3.0.0</xmlbeans.version>
         <xstream.version>1.2</xstream.version>
-        <xalan.version>2.7.1</xalan.version>
+        <xalan.version>2.7.3</xalan.version>
         <xml.parser.version>2.6.2</xml.parser.version>
         <xbean.version>4.5</xbean.version>
         <activemq.version>4.1.1</activemq.version>
-        <xerces.version>2.11.0</xerces.version>
+        <xerces.version>2.12.2</xerces.version>
         <xml-apis.version>1.4.01</xml-apis.version>
-        <xmlschema.version>2.2.1</xmlschema.version>
+        <xmlschema.version>2.3.0</xmlschema.version>
 
         <hibernate.version>4.3.11.Final</hibernate.version>
         <javassist.version>3.18.1-GA</javassist.version>
@@ -257,7 +255,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>xmlbeans-maven-plugin</artifactId>
-                    <version>${xmlbeans.version}</version>
+                    <version>2.3.3</version>
                 </plugin>
 
                 <plugin>
@@ -365,11 +363,11 @@
             <name>wso2-public</name>
             <url>https://maven.wso2.org/nexus/content/repositories/wso2-public</url>
         </pluginRepository>
-        <pluginRepository>
-            <id>codehaus</id>
-            <name>Codehaus Repository</name>
-            <url>http://repository.codehaus.org/</url>
-        </pluginRepository>
+<!--        <pluginRepository>-->
+<!--            <id>codehaus</id>-->
+<!--            <name>Codehaus Repository</name>-->
+<!--            <url>http://repository.codehaus.org/</url>-->
+<!--        </pluginRepository>-->
     </pluginRepositories>
 
 
