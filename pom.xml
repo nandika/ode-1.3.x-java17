@@ -96,7 +96,7 @@
 
         <derby.version>10.5.3.0_1</derby.version>
         <derby.tools.version>10.5.3.0_1</derby.tools.version>
-        <.versiondom4j>1.6.1</.versiondom4j>
+        <dom4j.version>1.6.1</dom4j.version>
 
         <geronimo.specs.version>1.1</geronimo.specs.version>
         <geronimo.version>3.1.4</geronimo.version>
