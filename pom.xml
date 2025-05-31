@@ -81,7 +81,7 @@
         <antlr.version>2.7.7</antlr.version>
 
         <backport.concurrent.version>3.1</backport.concurrent.version>
-        <commons.codec.version>1.3</commons.codec.version>
+        <commons.codec.version>1.14</commons.codec.version>
         <commons.collections.version>3.2.2</commons.collections.version>
         <commons.dbcp.version>1.4</commons.dbcp.version>
         <commons.fileupload.version>1.5</commons.fileupload.version>
@@ -137,7 +137,7 @@
 
         <persistence-api.version>2.2</persistence-api.version>
 
-        <rampart.version>1.7.1</rampart.version>
+        <rampart.version>1.8.0</rampart.version>
 
         <spring.version>2.5.6</spring.version>
 
@@ -179,17 +179,17 @@
         <testng.version>6.14.3</testng.version>
         <bouncycastle.version>140</bouncycastle.version>
         <jetty.version>6.1.3</jetty.version>
-        <wss4j.version>1.6.16</wss4j.version>
-        <xmlsec.version>2.3.4</xmlsec.version>
-        <opensaml1.version>1.1</opensaml1.version>
-        <opensaml.version>2.5.1-1</opensaml.version>
+        <wss4j.version>3.0.3</wss4j.version>
+        <xmlsec.version>4.0.4</xmlsec.version>
+<!--        <opensaml1.version>1.1</opensaml1.version>-->
+        <opensaml.version>4.3.2</opensaml.version>
         <openws.version>1.4.2-1</openws.version>
         <xmltooling.version>1.3.2-1</xmltooling.version>
-        <bcprov.version>1.49</bcprov.version>
+        <bcprov.version>1.79</bcprov.version>
         <velocity.version>1.5</velocity.version>
         <joda-time.version>2.5</joda-time.version>
         <esapi.version>2.0GA</esapi.version>
-        <mime4j-core.version>0.7.2</mime4j-core.version>
+        <mime4j-core.version>0.8.12</mime4j-core.version>
         <urlrewritefilter.version>5.1.3</urlrewritefilter.version>
         <groovy.version>3.0.19</groovy.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -391,6 +391,19 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.apache.rampart</groupId>
+                <artifactId>rampart</artifactId>
+                <version>${rampart.version}</version>
+                <type>mar</type>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.rampart</groupId>
+                <artifactId>rahas</artifactId>
+                <version>${rampart.version}</version>
+                <type>mar</type>
+            </dependency>
             <dependency>
                 <groupId>org.apache.ode</groupId>
                 <artifactId>ode-agents</artifactId>
@@ -825,8 +838,24 @@
                 <version>${xml-apis.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.ws.security</groupId>
+                <groupId>org.apache.wss4j</groupId>
                 <artifactId>wss4j</artifactId>
+                <version>${wss4j.version}</version>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.wss4j</groupId>
+                <artifactId>wss4j-ws-security-common</artifactId>
+                <version>${wss4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.wss4j</groupId>
+                <artifactId>wss4j-ws-security-dom</artifactId>
+                <version>${wss4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.wss4j</groupId>
+                <artifactId>wss4j-policy</artifactId>
                 <version>${wss4j.version}</version>
             </dependency>
             <dependency>
@@ -834,26 +863,36 @@
                 <artifactId>xmlsec</artifactId>
                 <version>${xmlsec.version}</version>
             </dependency>
+<!--            <dependency>-->
+<!--                <groupId>org.opensaml</groupId>-->
+<!--                <artifactId>opensaml1</artifactId>-->
+<!--                <version>${opensaml1.version}</version>-->
+<!--            </dependency>-->
             <dependency>
                 <groupId>org.opensaml</groupId>
-                <artifactId>opensaml1</artifactId>
-                <version>${opensaml1.version}</version>
+                <artifactId>opensaml-saml-impl</artifactId>
+                <version>4.3.0</version>
             </dependency>
             <dependency>
                 <groupId>org.opensaml</groupId>
-                <artifactId>opensaml</artifactId>
-                <version>${opensaml.version}</version>
+                <artifactId>opensaml-soap-impl</artifactId>
+                <version>4.3.0</version>
             </dependency>
+            <dependency>
+                <groupId>org.opensaml</groupId>
+                <artifactId>opensaml-xacml-saml-impl</artifactId>
+                <version>4.3.0</version>
+            </dependency>
+            <!--            <dependency>-->
+            <!--                <groupId>org.opensaml</groupId>-->
+            <!--                <artifactId>xmltooling</artifactId>-->
+            <!--                <version>${xmltooling.version}</version>-->
+            <!--            </dependency>-->
             <dependency>
                 <groupId>org.apache.axis2</groupId>
                 <artifactId>mex</artifactId>
                 <classifier>impl</classifier>
                 <version>${axis2.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.opensaml</groupId>
-                <artifactId>openws</artifactId>
-                <version>${openws.version}</version>
             </dependency>
             <dependency>
                 <groupId>commons-pool</groupId>
@@ -1192,14 +1231,10 @@
                 <artifactId>ode-console</artifactId>
                 <version>${ode-console.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.opensaml</groupId>
-                <artifactId>xmltooling</artifactId>
-                <version>${xmltooling.version}</version>
-            </dependency>
+
             <dependency>
                 <groupId>org.bouncycastle</groupId>
-                <artifactId>bcprov-jdk15on</artifactId>
+                <artifactId>bcprov-jdk18on</artifactId>
                 <version>${bcprov.version}</version>
             </dependency>
             <dependency>

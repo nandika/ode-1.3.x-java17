@@ -32,16 +32,20 @@
 <!--            <AppenderRef ref="FILE"/>-->
 <!--            <AppenderRef ref="STDOUT"/>-->
 <!--        </logger>-->
+<!--        <logger name="org.apache.axiom" level="debug" additivity="false">-->
+<!--            <AppenderRef ref="FILE"/>-->
+<!--            <AppenderRef ref="STDOUT"/>-->
+<!--        </logger>-->
 <!--        <Logger name="org.apache.axis2.transport" level="info" additivity="false">-->
 <!--            <AppenderRef ref="FILE"/>-->
 <!--            <AppenderRef ref="STDOUT"/>-->
 <!--        </Logger>-->
-        <Logger name="org.hibernate" level="warn" additivity="false">
-            <AppenderRef ref="FILE"/>
-        </Logger>
-        <Logger name="org.apache.openjpa" level="warn" additivity="false">
-            <AppenderRef ref="FILE"/>
-        </Logger>
+<!--        <Logger name="org.hibernate" level="warn" additivity="false">-->
+<!--            <AppenderRef ref="FILE"/>-->
+<!--        </Logger>-->
+<!--        <Logger name="org.apache.openjpa" level="warn" additivity="false">-->
+<!--            <AppenderRef ref="FILE"/>-->
+<!--        </Logger>-->
 
         <Root level="info">
             <AppenderRef ref="Async"/>

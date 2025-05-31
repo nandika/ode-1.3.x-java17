@@ -29,6 +29,7 @@ def testresources = new File(project.basedir, 'src/test/webapp')
 
 def hibconf = webapp + "/WEB-INF/conf.hib-derby";
 def defconf = webapp + "/WEB-INF/conf";
+def modules = webapp + "/WEB-INF/modules";
 
 log.info('-----Performing pre-integration test tasks-----');
 log.info('extracting the axis2 war');
@@ -63,15 +64,20 @@ log.info('copying some maven specific resources')
 //This was in buildr, don't know if it is needed
 //copy target/test-classes/TestEndpointProperties/*_global_conf*.endpoint to webapp/WEB-INF/conf
 
-prepare_secure_services_tests (new File(project.build.testOutputDirectory,'TestRampartBasic/secured-services'),~/sample\d+\.axis2/);
-prepare_secure_services_tests (new File(project.build.testOutputDirectory,'TestRampartPolicy/secured-services'),~/sample\d+\-policy\.xml/);
-prepare_secure_processes_tests (new File(project.build.testOutputDirectory,'TestRampartBasic/secured-processes'));
-prepare_secure_processes_tests (new File(project.build.testOutputDirectory,'TestRampartPolicy/secured-processes'));
+prepare_secure_services_tests (new File(project.build.testOutputDirectory,'TestRampartBasic/secured-services'),~/sample\d+\.axis2/, modules);
+prepare_secure_services_tests (new File(project.build.testOutputDirectory,'TestRampartPolicy/secured-services'),~/sample\d+\-policy\.xml/, modules);
+prepare_secure_processes_tests (new File(project.build.testOutputDirectory,'TestRampartBasic/secured-processes'), modules);
+prepare_secure_processes_tests (new File(project.build.testOutputDirectory,'TestRampartPolicy/secured-processes'), modules);
 
-def prepare_secure_processes_tests(test_dir) {
+def prepare_secure_processes_tests(test_dir, modules) {
     if (!test_dir.exists()) {
         log.info("Skipping secure process test setup — directory does not exist: ${test_dir}")
         return
+    }
+    ant.copy(todir: test_dir.getAbsolutePath()+ "/modules") {
+        fileset(dir: modules) {
+            include(name: '**')
+        }
     }
     log.info('preparing the secure process tests in ' + test_dir);
     def p = ~/sample\d+\-service\.xml/;
@@ -87,10 +93,15 @@ def prepare_secure_processes_tests(test_dir) {
     }
 }
 
-def prepare_secure_services_tests(test_dir, file_pattern){
+def prepare_secure_services_tests(test_dir, file_pattern, modules){
     if (!test_dir.exists()) {
         log.info("Skipping secure process test setup — directory does not exist: ${test_dir}")
         return
+    }
+    ant.copy(todir: test_dir.getAbsolutePath()+ "/modules") {
+        fileset(dir: modules) {
+            include(name: '**')
+        }
     }
     log.info('preparing the secure services tests with pattern '+file_pattern+' in ' + test_dir);
     test_dir.eachFileMatch(file_pattern) { config_file ->

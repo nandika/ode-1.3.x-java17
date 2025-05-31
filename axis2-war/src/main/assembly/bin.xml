@@ -177,14 +177,17 @@
                 <include>org.apache.rampart:rampart-core</include>
                 <include>org.apache.rampart:rampart-policy</include>
                 <include>org.apache.rampart:rampart-trust</include>
-                <include>org.apache.ws.security:wss4j</include>
+                <include>org.apache.wss4j:wss4j-ws-security-common</include>
+                <include>org.apache.wss4j:wss4j-ws-security-dom</include>
+                <include>org.apache.wss4j:wss4j-policy</include>
                 <include>org.apache.santuario:xmlsec</include>
                 <include>org.apache.axis2:mex:jar:impl</include>
-                <include>org.opensaml:opensaml</include>
-                <include>org.opensaml:opensaml1</include>
-                <include>org.opensaml:openws</include>
-                <include>org.opensaml:xmltooling</include>
-                <include>org.bouncycastle:bcprov-jdk15on</include>
+<!--                <include>org.opensaml:opensaml:jar</include>-->
+                <include>org.opensaml:opensaml-soap-impl:jar</include>
+                <include>org.opensaml:opensaml-soap-api:jar</include>
+<!--                <include>org.opensaml:opensaml-xacml-impl:jar</include>-->
+<!--                <include>org.opensaml:opensaml-xacml-api:jar</include>-->
+                <include>org.bouncycastle:bcprov-jdk18on</include>
                 <include>velocity:velocity</include>
                 <include>joda-time:joda-time</include>
                 <include>org.owasp.esapi:esapi</include>

@@ -339,14 +339,12 @@
         <dependency>
             <groupId>org.apache.rampart</groupId>
             <artifactId>rampart</artifactId>
-            <version>1.7.1</version>
             <type>mar</type>
         </dependency>
 
         <dependency>
             <groupId>org.apache.rampart</groupId>
             <artifactId>rahas</artifactId>
-            <version>1.7.1</version>
             <type>mar</type>
         </dependency>
 
@@ -625,14 +623,21 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.apache.ws.security</groupId>
+            <groupId>org.apache.wss4j</groupId>
             <artifactId>wss4j</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.wss4j</groupId>
+            <artifactId>wss4j-ws-security-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.wss4j</groupId>
+            <artifactId>wss4j-ws-security-dom</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.wss4j</groupId>
+            <artifactId>wss4j-policy</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.santuario</groupId>
@@ -644,26 +649,26 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>org.opensaml</groupId>
-            <artifactId>opensaml1</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.opensaml</groupId>
-            <artifactId>opensaml</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.opensaml</groupId>-->
+<!--            <artifactId>opensaml1</artifactId>-->
+<!--            <exclusions>-->
+<!--                <exclusion>-->
+<!--                    <groupId>commons-logging</groupId>-->
+<!--                    <artifactId>commons-logging</artifactId>-->
+<!--                </exclusion>-->
+<!--            </exclusions>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.opensaml</groupId>-->
+<!--            <artifactId>opensaml-core</artifactId>-->
+<!--            <exclusions>-->
+<!--                <exclusion>-->
+<!--                    <groupId>commons-logging</groupId>-->
+<!--                    <artifactId>commons-logging</artifactId>-->
+<!--                </exclusion>-->
+<!--            </exclusions>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.apache.axis2</groupId>
             <artifactId>mex</artifactId>
@@ -671,15 +676,19 @@
         </dependency>
         <dependency>
             <groupId>org.opensaml</groupId>
-            <artifactId>openws</artifactId>
+            <artifactId>opensaml-saml-impl</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opensaml</groupId>
-            <artifactId>xmltooling</artifactId>
+            <artifactId>opensaml-soap-impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml-xacml-saml-impl</artifactId>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15on</artifactId>
+            <artifactId>bcprov-jdk18on</artifactId>
         </dependency>
         <dependency>
             <groupId>velocity</groupId>
@@ -930,11 +939,12 @@
                             <excludes>
                                 <exclude>**/correlation/*HibTest.java</exclude>
                                 <exclude>**/instancecleanup/*HibTest.java</exclude>
-                                <exclude>**/rampart/basic/*Test.java</exclude>
-                                <exclude>**/rampart/policy/*Test.java</exclude>
                                 <exclude>**/daohib.bpel/**</exclude>
+                                <exclude>**/axis2/management/InstanceManagementTest.java</exclude>
+<!--                                <exclude>**/rampart/basic/*Test.java</exclude>-->
+<!--                                <exclude>**/rampart/policy/*Test.java</exclude>-->
 <!--                                <exclude>**/*EndpointConfigurationTest.java</exclude>-->
-                                <!--<exclude>**/axis2/BpelActivityTest.java</exclude>-->
+<!--                                <exclude>**/axis2/BpelActivityTest.java</exclude>-->
 <!--                                <exclude>**/axis2/instancecleanup/CleanFaultTest.java</exclude>-->
 <!--                                <exclude>**/axis2/EndpointTimeoutsTest.java</exclude>-->
 <!--                                <exclude>**/axis2/MessageStructureTest.java</exclude>-->
@@ -942,10 +952,9 @@
 <!--                                <exclude>**/axis2/EndpointConfigurationTest.java</exclude>-->
 <!--                                <exclude>**/axis2/NoInputMessageInvocationTest.java</exclude>-->
 <!--                                <exclude>**/axis2/NoP2PTest.java</exclude> -->
-                                <exclude>**/axis2/management/InstanceManagementTest.java</exclude>
                             </excludes>
 <!--                            <includes>-->
-<!--                                <include>**/axis2/management/InstanceManagementTest.java</include>-->
+<!--                                <include>**/axis2/instancecleanup/CleanFailureTest.java</include>-->
 <!--                            </includes>-->
                         </configuration>
                     </execution>

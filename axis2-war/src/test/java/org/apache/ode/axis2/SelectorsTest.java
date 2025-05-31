@@ -19,7 +19,6 @@
 
 package org.apache.ode.axis2;
 
-import org.opensaml.xml.signature.J;
 import org.testng.annotations.Test;
 import static org.testng.AssertJUnit.assertTrue;
 

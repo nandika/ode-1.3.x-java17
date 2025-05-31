@@ -120,7 +120,8 @@ public class SecuredProcessesTest extends Axis2TestBase {
     }
 
     private static Policy loadPolicy(String xmlPath) throws Exception {
-        InputStream is = SecuredProcessesTest.class.getClassLoader().getResourceAsStream(xmlPath);
+        File policyFile = new File(xmlPath);
+        InputStream is = policyFile.toURI().toURL().openStream();
         OMXMLParserWrapper omBuilder = OMXMLBuilderFactory.createOMBuilder(is);
         return PolicyEngine.getPolicy(omBuilder.getDocumentElement());
     }
