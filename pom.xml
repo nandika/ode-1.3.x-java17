@@ -92,11 +92,11 @@
         <commons.pool.version>1.6</commons.pool.version>
         <commons.primitives.version>1.0</commons.primitives.version>
         <commons.beanutils.version>1.10.1</commons.beanutils.version>
-        <commons.cli.version>1.2</commons.cli.version>
+        <commons.cli.version>1.9.0</commons.cli.version>
 
         <derby.version>10.5.3.0_1</derby.version>
         <derby.tools.version>10.5.3.0_1</derby.tools.version>
-        <dom4j.version>1.6.1</dom4j.version>
+        <.versiondom4j>1.6.1</.versiondom4j>
 
         <geronimo.specs.version>1.1</geronimo.specs.version>
         <geronimo.version>3.1.4</geronimo.version>
@@ -112,7 +112,7 @@
         <geronimo-jms.version>1.1.1</geronimo-jms.version>
         <jakrata.activation.version>2.1.3</jakrata.activation.version>
         <httpcore5.version>5.3.4</httpcore5.version>
-        <hsqldb.version>2.3.3</hsqldb.version>
+        <hsqldb.version>2.7.4</hsqldb.version>
         <h2.version>1.4.196</h2.version>
 
         <jaxen.version>1.1.6</jaxen.version>
@@ -181,9 +181,7 @@
         <jetty.version>6.1.3</jetty.version>
         <wss4j.version>3.0.3</wss4j.version>
         <xmlsec.version>4.0.4</xmlsec.version>
-<!--        <opensaml1.version>1.1</opensaml1.version>-->
         <opensaml.version>4.3.2</opensaml.version>
-        <openws.version>1.4.2-1</openws.version>
         <xmltooling.version>1.3.2-1</xmltooling.version>
         <bcprov.version>1.79</bcprov.version>
         <velocity.version>1.5</velocity.version>
@@ -883,11 +881,6 @@
                 <artifactId>opensaml-xacml-saml-impl</artifactId>
                 <version>4.3.0</version>
             </dependency>
-            <!--            <dependency>-->
-            <!--                <groupId>org.opensaml</groupId>-->
-            <!--                <artifactId>xmltooling</artifactId>-->
-            <!--                <version>${xmltooling.version}</version>-->
-            <!--            </dependency>-->
             <dependency>
                 <groupId>org.apache.axis2</groupId>
                 <artifactId>mex</artifactId>
