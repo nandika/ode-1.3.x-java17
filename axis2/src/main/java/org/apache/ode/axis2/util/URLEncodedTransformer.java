@@ -19,16 +19,13 @@
 
 package org.apache.ode.axis2.util;
 
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.util.EncodingUtil;
+import org.apache.commons.codec.net.URLCodec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.ode.utils.DOMUtils;
-import org.apache.ode.axis2.httpbinding.Messages;
 import org.w3c.dom.Element;
 
-import javax.wsdl.Part;
-import java.util.Iterator;
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
@@ -38,7 +35,8 @@ import java.util.ArrayList;
  */
 public class URLEncodedTransformer {
 
-
+    /** Default content encoding chatset */
+    private static final String DEFAULT_CHARSET = "ISO-8859-1";
     private static final Logger log = LoggerFactory.getLogger(URLEncodedTransformer.class);
 
     /**
@@ -73,7 +71,81 @@ public class URLEncodedTransformer {
                 l.add(new NameValuePair(e.getKey(), textValue));
             }
         }
-        return EncodingUtil.formUrlEncode(l.toArray(new NameValuePair[0]), "UTF-8");
+        return formUrlEncode(l.toArray(new NameValuePair[0]), "UTF-8");
+    }
+
+    public static String formUrlEncode(NameValuePair[] pairs, String charset) {
+        try {
+            return doFormUrlEncode(pairs, charset);
+        } catch (UnsupportedEncodingException e) {
+            log.error("Encoding not supported: " + charset);
+            try {
+                return doFormUrlEncode(pairs, DEFAULT_CHARSET);
+            } catch (UnsupportedEncodingException fatal) {
+                // Should never happen. ISO-8859-1 must be supported on all JVMs
+//                throw new HttpClientError("Encoding not supported: " +
+//                        DEFAULT_CHARSET);
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    /** Copied from org.apache.commons.httpclient.util.EncodingUtil
+     * Form-urlencoding routine.
+     *
+     * The default encoding for all forms is `application/x-www-form-urlencoded'.
+     * A form data set is represented in this media type as follows:
+     *
+     * The form field names and values are escaped: space characters are replaced
+     * by `+', and then reserved characters are escaped as per [URL]; that is,
+     * non-alphanumeric characters are replaced by `%HH', a percent sign and two
+     * hexadecimal digits representing the ASCII code of the character. Line breaks,
+     * as in multi-line text field values, are represented as CR LF pairs, i.e. `%0D%0A'.
+     *
+     * @param pairs the values to be encoded
+     * @param charset the character set of pairs to be encoded
+     *
+     * @return the urlencoded pairs
+     * @throws UnsupportedEncodingException if charset is not supported
+     *
+     * @since 2.0 final
+     */
+    private static String doFormUrlEncode(NameValuePair[] pairs, String charset) throws UnsupportedEncodingException {
+        StringBuffer buf = new StringBuffer();
+        for (int i = 0; i < pairs.length; i++) {
+            URLCodec codec = new URLCodec();
+            NameValuePair pair = pairs[i];
+            if (pair.getName() != null) {
+                if (i > 0) {
+                    buf.append("&");
+                }
+                buf.append(codec.encode(pair.getName(), charset));
+                buf.append("=");
+                if (pair.getValue() != null) {
+                    buf.append(codec.encode(pair.getValue(), charset));
+                }
+            }
+        }
+        return buf.toString();
+    }
+
+
+    static class NameValuePair {
+        private final String name;
+        private final String value;
+
+        public NameValuePair(String name, String value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getValue() {
+            return value;
+        }
     }
 
 }

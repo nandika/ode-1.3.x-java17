@@ -47,10 +47,6 @@ import javax.transaction.xa.XAResource;
 
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
-import org.apache.axis2.engine.AxisConfiguration;
-import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.core5.util.TimeValue;
 import org.slf4j.Logger;
@@ -560,11 +556,11 @@ public class ODEServer {
         int max_per_route = Integer.parseInt(_odeConfig.getProperty(MAX_HOST_CONNECTIONS, ""+_odeConfig.getPoolMaxSize()));
         int max_total = Integer.parseInt(_odeConfig.getProperty(MAX_TOTAL_CONNECTIONS, ""+_odeConfig.getPoolMaxSize()));
         if(__log.isDebugEnabled()) {
-            __log.debug(HttpConnectionManagerParams.MAX_HOST_CONNECTIONS+"="+max_per_route);
-            __log.debug(HttpConnectionManagerParams.MAX_TOTAL_CONNECTIONS+"="+max_total);
+            __log.debug(MAX_HOST_CONNECTIONS+"="+max_per_route);
+            __log.debug(MAX_TOTAL_CONNECTIONS+"="+max_total);
         }
         if(max_per_route<1 || max_total <1){
-            String errmsg = HttpConnectionManagerParams.MAX_HOST_CONNECTIONS+" and "+ HttpConnectionManagerParams.MAX_TOTAL_CONNECTIONS+" must be positive integers!";
+            String errmsg = MAX_HOST_CONNECTIONS+" and "+ MAX_TOTAL_CONNECTIONS+" must be positive integers!";
             __log.error(errmsg);
             throw new ServletException(errmsg);
         }

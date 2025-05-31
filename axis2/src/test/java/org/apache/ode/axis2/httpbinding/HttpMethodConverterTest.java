@@ -20,12 +20,12 @@
 package org.apache.ode.axis2.httpbinding;
 
 import junit.framework.TestCase;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.params.DefaultHttpParams;
-import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
-import org.apache.hc.core5.http.ClassicHttpRequest;
+//import org.apache.commons.httpclient.HttpMethod;
+//import org.apache.commons.httpclient.params.DefaultHttpParams;
+//import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
+//import org.apache.commons.httpclient.methods.PostMethod;
+//import org.apache.commons.httpclient.methods.StringRequestEntity;
+//import org.apache.hc.core5.http.ClassicHttpRequest;
 import org.apache.ode.bpel.epr.MutableEndpoint;
 import org.apache.ode.bpel.iapi.*;
 import org.apache.ode.utils.DOMUtils;
