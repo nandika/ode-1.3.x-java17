@@ -486,8 +486,8 @@
             <artifactId>geronimo-kernel</artifactId>
             <exclusions>
                 <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
+                        <groupId>log4j</groupId>
+                        <artifactId>log4j</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -597,8 +597,8 @@
             <artifactId>rampart-core</artifactId>
             <exclusions>
                 <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -617,8 +617,8 @@
             <artifactId>rampart-trust</artifactId>
             <exclusions>
                 <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-configuration</groupId>
+                    <artifactId>commons-configuration</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -677,6 +677,12 @@
         <dependency>
             <groupId>org.opensaml</groupId>
             <artifactId>opensaml-saml-impl</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.bouncycastle</groupId>
+                    <artifactId>bcpkix-jdk18on</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.opensaml</groupId>
@@ -703,8 +709,8 @@
             <artifactId>esapi</artifactId>
             <exclusions>
                 <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-configuration</groupId>
+                    <artifactId>commons-configuration</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

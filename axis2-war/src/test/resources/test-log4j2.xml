@@ -40,12 +40,12 @@
 <!--            <AppenderRef ref="FILE"/>-->
 <!--            <AppenderRef ref="STDOUT"/>-->
 <!--        </Logger>-->
-<!--        <Logger name="org.hibernate" level="warn" additivity="false">-->
-<!--            <AppenderRef ref="FILE"/>-->
-<!--        </Logger>-->
-<!--        <Logger name="org.apache.openjpa" level="warn" additivity="false">-->
-<!--            <AppenderRef ref="FILE"/>-->
-<!--        </Logger>-->
+        <Logger name="org.hibernate" level="warn" additivity="false">
+            <AppenderRef ref="FILE"/>
+        </Logger>
+        <Logger name="org.apache.openjpa" level="warn" additivity="false">
+            <AppenderRef ref="FILE"/>
+        </Logger>
 
         <Root level="info">
             <AppenderRef ref="Async"/>

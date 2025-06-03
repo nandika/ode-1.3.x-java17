@@ -205,6 +205,12 @@
             <groupId>org.apache.geronimo.modules</groupId>
             <artifactId>geronimo-kernel</artifactId>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.tranql</groupId>
@@ -304,6 +310,7 @@
     </dependencies>
     <build>
         <plugins>
+
             <!--
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -339,7 +346,7 @@
 <!--                        </includes>-->
                     <runOrder>reversealphabetical</runOrder>
                     <skipTests>false</skipTests>
-                    <argLine>-da</argLine>
+                    <argLine>-da --add-opens java.base/java.lang=ALL-UNNAMED</argLine>
                 </configuration>
             </plugin>
         </plugins>
