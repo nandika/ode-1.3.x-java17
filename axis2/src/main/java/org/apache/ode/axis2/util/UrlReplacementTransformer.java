@@ -19,8 +19,7 @@
 
 package org.apache.ode.axis2.util;
 
-import org.apache.commons.lang.CharSet;
-import org.apache.ode.utils.URITemplate;
+import org.apache.ode.utils.URIUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.ode.utils.DOMUtils;
@@ -97,7 +96,7 @@ public class UrlReplacementTransformer {
             // if it is not a simple type, skip it
             if (replacementValue != null) {
                 try {
-                    replacementValue = URITemplate.encodeWithinQuery(replacementValue, Charset.defaultCharset().name());
+                    replacementValue = URIUtils.encodeWithinQuery(replacementValue, Charset.defaultCharset().name());
 
                 } catch (UnsupportedEncodingException | URISyntaxException urie) {
                     // this exception is never thrown by the code of httpclient
